@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">Groceree</string>
-    <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-
+    <string name="add_item">Add Item</string>
+    <string name="new_item">New Item</string>
+    <string name="delete_item">Delete</string>
 </resources>
