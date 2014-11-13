@@ -13,6 +13,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_ITEM = "item";
     public static final String COLUMN_DELETED = "deleted";
+    public static final String COLUMN_TIMESTAMP = "timestamp";
 
 
     private static final String DATABASE_NAME = "item.db";
@@ -22,7 +23,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_CREATE = "create table " + TABLE_ITEM
             + "(" + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_ITEM + " text not null, "
-            + COLUMN_DELETED + " integer not null";
+            + COLUMN_DELETED + " boolean not null default 0, " // default is false
+            + COLUMN_TIMESTAMP  + " datetime default current_timestamp";
 
     public MySQLiteHelper( Context context ) {
         super( context, DATABASE_NAME, null, DATABASE_VERSION );
