@@ -48,6 +48,8 @@ public class ItemDataSource {
         return newItem;
     }
 
+    // TODO: Update item
+
     public void deleteItem( Item item ) {
         long id = item.getId();
 
@@ -77,8 +79,17 @@ public class ItemDataSource {
 
     private Item cursorToItem( Cursor cursor ){
         Item item = new Item();
+        int isDeletedInt;
         item.setId( cursor.getLong( 0 ) );
         item.setItem( cursor.getString( 1 ) );
+
+        isDeletedInt = cursor.getInt( 2 );
+        if( isDeletedInt != 0 )
+            item.setDeleted( true );
+        else
+            item.setDeleted( false );
+
+        item.setTimeStamp( cursor.getInt( 3 ) );
 
         return item;
     }
