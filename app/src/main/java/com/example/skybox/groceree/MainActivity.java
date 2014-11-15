@@ -109,54 +109,6 @@ public class MainActivity extends ListActivity {
         });
     }
 
-    private class SelectionAdapter extends ArrayAdapter<Item> {
-        private SparseBooleanArray mSelectedItems;
-
-        public SelectionAdapter( Context context, int resource, List<Item> items ) {
-            super( context, resource, items );
-            mSelectedItems = new SparseBooleanArray();
-        }
-
-        public void toggleSelection( int position ) {
-            setNewSelection( position, !mSelectedItems.get( position ) );
-        }
-
-        public void setNewSelection( int position, boolean value ) {
-            if( value )
-                mSelectedItems.put( position, value );
-            else
-                mSelectedItems.delete( position );
-
-            notifyDataSetChanged();
-        }
-
-        public boolean isPositionChecked( int position ) {
-            Boolean result = mSelectedItems.get( position );
-            return result == null ? false : result;
-        }
-
-        public SparseBooleanArray getmSelectedItems() {
-            return mSelectedItems;
-        }
-
-        public void clearSelection() {
-            mSelectedItems = new SparseBooleanArray();
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public View getView( int position, View convertView, ViewGroup parent ) {
-            View v = super.getView( position, convertView, parent ); // Let the adapter handle setting up the row views
-            v.setBackgroundColor( getResources().getColor( android.R.color.background_light ) );
-
-            if( mSelectedItems.get( position ) != false ) {
-                v.setBackgroundColor( getResources().getColor( android.R.color.holo_blue_light ) );
-            }
-
-            return v;
-        }
-    }
-
     public void insertItem( View view ) {
         ArrayAdapter<Item> adapter = ( ArrayAdapter<Item> ) getListAdapter();
 
