@@ -26,7 +26,7 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + COLUMN_ITEM + " text not null, "
             + COLUMN_ISDELETED + " boolean not null default 0, " // default is false
             + COLUMN_ISMARKED + " boolean not null default 0, " // default is false
-            + COLUMN_TIMESTAMP  + " datetime default current_timestamp";
+            + COLUMN_TIMESTAMP  + " datetime default current_timestamp);";
 
     public MySQLiteHelper( Context context ) {
         super( context, DATABASE_NAME, null, DATABASE_VERSION );

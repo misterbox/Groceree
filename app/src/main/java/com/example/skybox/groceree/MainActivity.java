@@ -1,9 +1,9 @@
 package com.example.skybox.groceree;
 
-import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
 import android.view.Menu;
@@ -14,10 +14,10 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import java.util.List;
-
 
 public class MainActivity extends ListActivity {
     private ItemDataSource dataSource;
@@ -32,14 +32,14 @@ public class MainActivity extends ListActivity {
         dataSource = new ItemDataSource( this );
         dataSource.open();
 
-        List<Item> values = dataSource.getAllItems();
-        System.out.println( "values.size" + values.size() );
+        List<Item> items = dataSource.getAllItems();
+        System.out.println( "items.size: " + items.size() );
 
         // TODO: replace 'simple_list_item_1' with something to include the TimeStamp column (for debugging)
-        final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, values );
+        final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
 
         setListAdapter( mAdapter );
-        mAdapter.addAll( values );
+        //mAdapter.addAll( items ); // Why does each item in the list get doubled when this is not commented? I need to understand more.
 
         // Setup our MultiChoiceModeListener for the CAB
         listView.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE_MODAL );
@@ -147,6 +147,7 @@ public class MainActivity extends ListActivity {
         @Override
         public View getView( int position, View convertView, ViewGroup parent ) {
             View v = super.getView( position, convertView, parent ); // Let the adapter handle setting up the row views
+            v.setBackgroundColor( getResources().getColor( android.R.color.background_light ) );
 
             if( mSelectedItems.get( position ) != false ) {
                 v.setBackgroundColor( getResources().getColor( android.R.color.holo_blue_light ) );
@@ -154,6 +155,20 @@ public class MainActivity extends ListActivity {
 
             return v;
         }
+    }
+
+    public void insertItem( View view ) {
+        ArrayAdapter<Item> adapter = ( ArrayAdapter<Item> ) getListAdapter();
+
+        // Get item name from editText
+        EditText editText = ( EditText ) findViewById( R.id.enter_string );
+        String itemName = editText.getText().toString();
+
+        // insert new item in to the database
+        Item item = dataSource.createItem( itemName );
+        adapter.add( item );
+        String message = String.format( "%s entered", item );
+        Log.w(MySQLiteHelper.class.getName(), message);
     }
 
     @Override

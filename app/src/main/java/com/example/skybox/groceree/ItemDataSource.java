@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -17,8 +18,8 @@ import java.util.Locale;
 public class ItemDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
-    private String[] allColumns = { MySQLiteHelper.COLUMN_ID, MySQLiteHelper.TABLE_ITEM,
-        MySQLiteHelper.COLUMN_ISDELETED, MySQLiteHelper.COLUMN_TIMESTAMP };
+    private String[] allColumns = { MySQLiteHelper.COLUMN_ID, MySQLiteHelper.COLUMN_ITEM,
+        MySQLiteHelper.COLUMN_ISMARKED, MySQLiteHelper.COLUMN_ISDELETED, MySQLiteHelper.COLUMN_TIMESTAMP };
 
     public ItemDataSource( Context context ) {
         dbHelper = new MySQLiteHelper( context );
@@ -35,8 +36,8 @@ public class ItemDataSource {
     public Item createItem( String item ) {
         ContentValues values = new ContentValues();
         values.put( MySQLiteHelper.COLUMN_ITEM, item );
-        values.put( MySQLiteHelper.COLUMN_ISMARKED, 0 );
-        values.put( MySQLiteHelper.COLUMN_ISDELETED, 0 );
+        values.put( MySQLiteHelper.COLUMN_ISMARKED, 0 );    // default is false
+        values.put( MySQLiteHelper.COLUMN_ISDELETED, 0 );   // default is false
         values.put( MySQLiteHelper.COLUMN_TIMESTAMP, getDateTime() );
         long insertId = database.insert( MySQLiteHelper.TABLE_ITEM, null, values );
 
@@ -45,6 +46,9 @@ public class ItemDataSource {
         cursor.moveToFirst();
         Item newItem = cursorToItem( cursor );
         cursor.close();
+
+        String message = String.format( "Item created with id %d, name %s and timeStamp %s", insertId, item, getDateTime() );
+        Log.w( MySQLiteHelper.class.getName(), message );
 
         return newItem;
     }
