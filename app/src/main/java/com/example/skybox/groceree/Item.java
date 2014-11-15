@@ -6,8 +6,9 @@ package com.example.skybox.groceree;
 public class Item {
     private long id; // Column index 0
     private String item; //Column index 1
-    private boolean isDeleted; // Column index 2
-    private int timeStamp; // Column index 3
+    private boolean isMarked;   // Column index 2
+    private boolean isDeleted; // Column index 3
+    private int timeStamp; // Column index 4
 
 
     public long getId() {
@@ -29,6 +30,14 @@ public class Item {
     // Will be used by the ArrayAdapter in the ListView
     public String toString() {
         return item;
+    }
+
+    public boolean isMarked() {
+        return isMarked;
+    }
+
+    public void setMarked( boolean isMarked ) {
+        this.isMarked = isMarked;
     }
 
     public boolean isDeleted() {

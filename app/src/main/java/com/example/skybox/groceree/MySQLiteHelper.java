@@ -12,8 +12,9 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     public static final String TABLE_ITEM = "item";
     public static final String COLUMN_ID = "_id";
     public static final String COLUMN_ITEM = "item";
-    public static final String COLUMN_DELETED = "deleted";
-    public static final String COLUMN_TIMESTAMP = "timestamp";
+    public static final String COLUMN_ISMARKED = "isMarked";    // Represents if an item has been striked off the list, but not deleted.
+    public static final String COLUMN_ISDELETED = "isDeleted";  // Represents if an item has been removed from the list.
+    public static final String COLUMN_TIMESTAMP = "timestamp";  // Timestamp of last update to the row.
 
 
     private static final String DATABASE_NAME = "item.db";
@@ -23,7 +24,8 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
     private static final String DATABASE_CREATE = "create table " + TABLE_ITEM
             + "(" + COLUMN_ID + " integer primary key autoincrement, "
             + COLUMN_ITEM + " text not null, "
-            + COLUMN_DELETED + " boolean not null default 0, " // default is false
+            + COLUMN_ISDELETED + " boolean not null default 0, " // default is false
+            + COLUMN_ISMARKED + " boolean not null default 0, " // default is false
             + COLUMN_TIMESTAMP  + " datetime default current_timestamp";
 
     public MySQLiteHelper( Context context ) {

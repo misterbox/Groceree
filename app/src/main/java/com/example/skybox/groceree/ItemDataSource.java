@@ -18,7 +18,7 @@ public class ItemDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID, MySQLiteHelper.TABLE_ITEM,
-        MySQLiteHelper.COLUMN_DELETED, MySQLiteHelper.COLUMN_TIMESTAMP };
+        MySQLiteHelper.COLUMN_ISDELETED, MySQLiteHelper.COLUMN_TIMESTAMP };
 
     public ItemDataSource( Context context ) {
         dbHelper = new MySQLiteHelper( context );
@@ -35,7 +35,8 @@ public class ItemDataSource {
     public Item createItem( String item ) {
         ContentValues values = new ContentValues();
         values.put( MySQLiteHelper.COLUMN_ITEM, item );
-        values.put( MySQLiteHelper.COLUMN_DELETED, 0 );
+        values.put( MySQLiteHelper.COLUMN_ISMARKED, 0 );
+        values.put( MySQLiteHelper.COLUMN_ISDELETED, 0 );
         values.put( MySQLiteHelper.COLUMN_TIMESTAMP, getDateTime() );
         long insertId = database.insert( MySQLiteHelper.TABLE_ITEM, null, values );
 
@@ -79,17 +80,24 @@ public class ItemDataSource {
 
     private Item cursorToItem( Cursor cursor ){
         Item item = new Item();
-        int isDeletedInt;
         item.setId( cursor.getLong( 0 ) );
         item.setItem( cursor.getString( 1 ) );
 
-        isDeletedInt = cursor.getInt( 2 );
-        if( isDeletedInt != 0 )
-            item.setDeleted( true );
-        else
-            item.setDeleted( false );
+        int isMarkedInt = cursor.getInt( 2 );
+        if( isMarkedInt != 0 ) {
+            item.setMarked( true );
+        } else {
+            item.setMarked( false );
+        }
 
-        item.setTimeStamp( cursor.getInt( 3 ) );
+        int isDeletedInt = cursor.getInt( 3 );
+        if( isDeletedInt != 0 ) {
+            item.setDeleted(true);
+        } else {
+            item.setDeleted(false);
+        }
+
+        item.setTimeStamp( cursor.getInt( 4 ) );
 
         return item;
     }
