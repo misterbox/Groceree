@@ -36,7 +36,7 @@ public class MainActivity extends ListActivity {
         System.out.println( "items.size: " + items.size() );
 
         // TODO: replace 'simple_list_item_1' with something to include the TimeStamp column (for debugging)
-        final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
+        final SelectionAdapter mAdapter = new SelectionAdapter( this, R.layout.listview_row_item, items );
 
         setListAdapter( mAdapter );
         //mAdapter.addAll( items ); // Why does each item in the list get doubled when this is not commented? I need to understand more.

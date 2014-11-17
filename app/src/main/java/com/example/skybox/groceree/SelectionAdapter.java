@@ -2,9 +2,11 @@ package com.example.skybox.groceree;
 
 import android.content.Context;
 import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -14,10 +16,12 @@ import java.util.List;
 public class SelectionAdapter extends ArrayAdapter<Item> {
     private SparseBooleanArray mSelectedItems;
     private Context context;
+    private List<Item> items;
 
     public SelectionAdapter( Context context, int resource, List<Item> items ) {
-        super( context, resource, items );
+        super( context, 0, items );
         this.context = context;
+        this.items = items;
         mSelectedItems = new SparseBooleanArray();
     }
 
@@ -50,13 +54,24 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
 
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
-        View v = super.getView( position, convertView, parent ); // Let the adapter handle setting up the row views
-        v.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
+        Item item = items.get( position );
 
-        if( mSelectedItems.get( position ) != false ) {
-            v.setBackgroundColor( context.getResources().getColor( android.R.color.holo_blue_light ) );
+        if( convertView == null ) {
+            convertView = LayoutInflater.from( context ).inflate( R.layout.listview_row_item, parent, false );
         }
 
-        return v;
+        convertView.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
+
+        TextView tvItem = ( TextView ) convertView.findViewById( R.id.textViewItem );
+        TextView tvTimeStamp = ( TextView ) convertView.findViewById( R.id.textViewTimeStamp );
+
+        tvItem.setText( item.toString() );
+        tvTimeStamp.setText( Integer.toString( item.getTimeStamp() ) );
+
+        if( mSelectedItems.get( position ) != false ) {
+            convertView.setBackgroundColor( context.getResources().getColor( android.R.color.holo_blue_light ) );
+        }
+
+        return convertView;
     }
 }
