@@ -1,6 +1,7 @@
 package com.example.skybox.groceree;
 
 import android.app.ListActivity;
+import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -14,6 +15,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.List;
 
@@ -103,6 +105,21 @@ public class MainActivity extends ListActivity {
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
                 listView.setItemChecked( position, !mAdapter.isPositionChecked( position ) );
                 return false;
+            }
+        });
+
+        // Testing onClick listener
+        // TODO: Figure out how to properly test for flags
+        listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                TextView tvItem = ( TextView ) view.findViewById( R.id.textViewItem );
+
+                if( tvItem.getPaintFlags() == Paint.STRIKE_THRU_TEXT_FLAG ) {
+                    tvItem.setPaintFlags( tvItem.getPaintFlags() & ( ~ Paint.STRIKE_THRU_TEXT_FLAG ) );
+                } else {
+                    tvItem.setPaintFlags( tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
+                }
             }
         });
     }
