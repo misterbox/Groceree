@@ -5,12 +5,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
-
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 /**
  * Created by skybox on 11/12/14.
@@ -34,11 +30,13 @@ public class ItemDataSource {
     }
 
     public Item createItem( String item ) {
+        Long currentTime = System.currentTimeMillis() / 1000;
+
         ContentValues values = new ContentValues();
         values.put( MySQLiteHelper.COLUMN_ITEM, item );
         values.put( MySQLiteHelper.COLUMN_ISMARKED, 0 );    // default is false
         values.put( MySQLiteHelper.COLUMN_ISDELETED, 0 );   // default is false
-        values.put( MySQLiteHelper.COLUMN_TIMESTAMP, getDateTime() );
+        values.put( MySQLiteHelper.COLUMN_TIMESTAMP, currentTime );
         long insertId = database.insert( MySQLiteHelper.TABLE_ITEM, null, values );
 
         Cursor cursor = database.query( MySQLiteHelper.TABLE_ITEM, allColumns, MySQLiteHelper.COLUMN_ID
@@ -47,7 +45,7 @@ public class ItemDataSource {
         Item newItem = cursorToItem( cursor );
         cursor.close();
 
-        String message = String.format( "Item created with id %d, name %s and timeStamp %s", insertId, item, getDateTime() );
+        String message = String.format( "Item created with id %d, name %s and timeStamp %s", insertId, item, newItem.getTimeStampString() );
         Log.w( MySQLiteHelper.class.getName(), message );
 
         return newItem;
@@ -102,16 +100,9 @@ public class ItemDataSource {
         }
 
         item.setTimeStamp( cursor.getInt( 4 ) );
+        System.out.println( "TimeStamp: " + cursor.getInt( 4 ) );
 
         return item;
     }
 
-    // Helper function for createItem() to get current DateTime
-    // Source: http://tips.androidhive.info/2013/10/android-insert-datetime-value-in-sqlite-database/
-    private String getDateTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss",
-                Locale.getDefault() );
-        Date date = new Date();
-        return dateFormat.format( date );
-    }
 }

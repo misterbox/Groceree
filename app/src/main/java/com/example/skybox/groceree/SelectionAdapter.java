@@ -66,7 +66,7 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
         TextView tvTimeStamp = ( TextView ) convertView.findViewById( R.id.textViewTimeStamp );
 
         tvItem.setText( item.toString() );
-        tvTimeStamp.setText( Integer.toString( item.getTimeStamp() ) );
+        tvTimeStamp.setText( Long.toString( item.getTimeStamp() ) );
 
         if( mSelectedItems.get( position ) != false ) {
             convertView.setBackgroundColor( context.getResources().getColor( android.R.color.holo_blue_light ) );
