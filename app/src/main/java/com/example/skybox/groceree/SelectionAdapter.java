@@ -19,7 +19,7 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
     private List<Item> items;
 
     public SelectionAdapter( Context context, int resource, List<Item> items ) {
-        super( context, 0, items );
+        super( context, resource, items );
         this.context = context;
         this.items = items;
         mSelectedItems = new SparseBooleanArray();
@@ -54,11 +54,13 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
 
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
+        /*
         Item item = items.get( position );
 
         if( convertView == null ) {
             convertView = LayoutInflater.from( context ).inflate( R.layout.listview_row_item, parent, false );
         }
+
 
         convertView.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 
@@ -67,11 +69,15 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
 
         tvItem.setText( item.toString() );
         tvTimeStamp.setText( Long.toString( item.getTimeStamp() ) );
+        */
+
+        View v = super.getView( position, convertView, parent ); //// Let the adapter handle setting up the row views
+        v.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 
         if( mSelectedItems.get( position ) != false ) {
             convertView.setBackgroundColor( context.getResources().getColor( android.R.color.holo_blue_light ) );
         }
 
-        return convertView;
+        return v;
     }
 }

@@ -1,6 +1,7 @@
 package com.example.skybox.groceree;
 
 import android.app.ListActivity;
+import android.content.Intent;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,36 +34,35 @@ public class MainActivity extends ListActivity {
         dataSource.open();
 
         List<Item> items = dataSource.getAllItems();
-        System.out.println( "items.size: " + items.size() );
 
         // TODO: replace 'simple_list_item_1' with something to include the TimeStamp column (for debugging)
-        final SelectionAdapter mAdapter = new SelectionAdapter( this, R.layout.listview_row_item, items );
+        final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
 
         setListAdapter( mAdapter );
 
         // Setup our MultiChoiceModeListener for the CAB
         listView.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE_MODAL );
-        listView.setMultiChoiceModeListener( new AbsListView.MultiChoiceModeListener() {
+        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
             private int numRows = 0;
 
             @Override
             public void onItemCheckedStateChanged(ActionMode actionMode, int position, long id, boolean checked) {
-                if( checked ) {
+                if (checked) {
                     numRows++;
-                    mAdapter.setNewSelection( position, checked );
+                    mAdapter.setNewSelection(position, checked);
                 } else {
                     numRows--;
-                    mAdapter.toggleSelection( position);
+                    mAdapter.toggleSelection(position);
                 }
 
-                actionMode.setTitle( numRows + " selected" );
+                actionMode.setTitle(numRows + " selected");
             }
 
             @Override
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 numRows = 0;
                 MenuInflater inflater = getMenuInflater();
-                inflater.inflate( R.menu.menu, menu );
+                inflater.inflate(R.menu.menu, menu);
 
                 return true;
             }
@@ -74,20 +74,20 @@ public class MainActivity extends ListActivity {
 
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                switch ( menuItem.getItemId() ) {
+                switch (menuItem.getItemId()) {
                     case R.id.delete_item:
                         // TODO: mark item as deleted
                         // Mark items at position as deleted
                         SparseBooleanArray selected = mAdapter.getmSelectedItems();
 
-                        for( int i = ( selected.size() - 1 ); i >= 0; i-- ) {
-                            if( selected.valueAt( i ) ) {
+                        for (int i = (selected.size() - 1); i >= 0; i--) {
+                            if (selected.valueAt(i)) {
                                 // Do something here
                             }
                         }
 
                         numRows = 0;
-                        mAdapter.clearSelection();;
+                        mAdapter.clearSelection();
                         actionMode.finish();
                     default:
                         return false;
@@ -99,25 +99,25 @@ public class MainActivity extends ListActivity {
                 mAdapter.clearSelection();
             }
         });
-        listView.setOnItemLongClickListener( new AdapterView.OnItemLongClickListener() {
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
-                listView.setItemChecked( position, !mAdapter.isPositionChecked( position ) );
+                listView.setItemChecked(position, !mAdapter.isPositionChecked(position));
                 return false;
             }
         });
 
         // onClick listener to stikethrough text and 'mark' the item in the database
         // TODO: Figure out how to properly test for flags
-        listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                TextView tvItem = ( TextView ) view.findViewById( R.id.textViewItem );
+                TextView tvItem = (TextView) view.findViewById(android.R.id.text1);
 
-                if( ( tvItem.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG ) > 0 ) {
-                    tvItem.setPaintFlags( tvItem.getPaintFlags() & ( ~ Paint.STRIKE_THRU_TEXT_FLAG ) );
+                if ((tvItem.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
+                    tvItem.setPaintFlags(tvItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
                 } else {
-                    tvItem.setPaintFlags( tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
+                    tvItem.setPaintFlags(tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                 }
             }
         });
@@ -154,6 +154,9 @@ public class MainActivity extends ListActivity {
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             return true;
+        } else if( id == R.id.action_showdb ) {
+            Intent intent = new Intent( this, ShowDB.class );
+            startActivity( intent );
         }
 
         return super.onOptionsItemSelected(item);

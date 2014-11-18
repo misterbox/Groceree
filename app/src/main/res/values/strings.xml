@@ -6,4 +6,7 @@
     <string name="add_item">Add Item</string>
     <string name="new_item">New Item</string>
     <string name="delete_item">Delete</string>
+    <string name="title_activity_show_db">ShowDB</string>
+    <string name="hello_world">Hello world!</string>
+
 </resources>
