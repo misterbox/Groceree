@@ -39,7 +39,6 @@ public class MainActivity extends ListActivity {
         final SelectionAdapter mAdapter = new SelectionAdapter( this, R.layout.listview_row_item, items );
 
         setListAdapter( mAdapter );
-        //mAdapter.addAll( items ); // Why does each item in the list get doubled when this is not commented? I need to understand more.
 
         // Setup our MultiChoiceModeListener for the CAB
         listView.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE_MODAL );
@@ -108,14 +107,14 @@ public class MainActivity extends ListActivity {
             }
         });
 
-        // Testing onClick listener
+        // onClick listener to stikethrough text and 'mark' the item in the database
         // TODO: Figure out how to properly test for flags
         listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
                 TextView tvItem = ( TextView ) view.findViewById( R.id.textViewItem );
 
-                if( tvItem.getPaintFlags() == Paint.STRIKE_THRU_TEXT_FLAG ) {
+                if( ( tvItem.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG ) > 0 ) {
                     tvItem.setPaintFlags( tvItem.getPaintFlags() & ( ~ Paint.STRIKE_THRU_TEXT_FLAG ) );
                 } else {
                     tvItem.setPaintFlags( tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
