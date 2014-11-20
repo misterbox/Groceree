@@ -36,9 +36,13 @@ public class ItemAdapter extends ArrayAdapter<Item> {
 
         TextView tvItem = ( TextView ) convertView.findViewById( R.id.textViewItem );
         TextView tvTimeStamp = (TextView) convertView.findViewById( R.id.textViewTimeStamp );
+        TextView tvMarked = ( TextView ) convertView.findViewById( R.id.tvMarked );
+        TextView tvDeleted = ( TextView ) convertView.findViewById( R.id.tvDeleted );
 
         tvItem.setText( item.toString() );
         tvTimeStamp.setText( Long.toString( item.getTimeStamp() ) );
+        tvMarked.setText( String.valueOf( item.isMarked() ) );
+        tvDeleted.setText( String.valueOf( item.isDeleted() ) );
 
         return convertView;
     }
