@@ -7,10 +7,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -27,7 +29,10 @@ public class MainActivity extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         final ListView listView = getListView();
+
+        EditText etEnterString = ( EditText ) findViewById( R.id.enter_string );
 
         // First get all items from database and populate our ListView
         dataSource = new ItemDataSource( this );
@@ -107,7 +112,7 @@ public class MainActivity extends ListActivity {
             }
         });
 
-        // onClick listener to stikethrough text and 'mark' the item in the database
+        // onClick listener to stikethrough text and set 'isMarked' for the item in the database
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
@@ -133,9 +138,24 @@ public class MainActivity extends ListActivity {
 
             }
         });
+
+        // Set up listener for 'Done' input from the keyboard
+        etEnterString.setOnEditorActionListener( new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction( TextView textView, int actionId, KeyEvent keyEvent ) {
+                boolean handled = false;
+
+                if( actionId == EditorInfo.IME_ACTION_DONE ) {
+                    insertItem();
+                    handled = true;
+                }
+
+                return handled;
+            }
+        });
     }
 
-    public void insertItem( View view ) {
+    public void insertItem() {
         SelectionAdapter adapter = ( SelectionAdapter ) getListAdapter();
 
         // Get item name from editText
@@ -143,7 +163,7 @@ public class MainActivity extends ListActivity {
         String itemName = editText.getText().toString();
 
         // Clear editText
-        editText.setText( "" );
+        editText.setText("");
 
         // insert new item in to the database
         Item item = dataSource.createItem( itemName );
@@ -162,7 +182,7 @@ public class MainActivity extends ListActivity {
         dataSource.updateItem( item );
 
         // Remove item from the adapter
-        adapter.remove( item );
+        adapter.remove(item);
         adapter.notifyDataSetChanged();
     }
 

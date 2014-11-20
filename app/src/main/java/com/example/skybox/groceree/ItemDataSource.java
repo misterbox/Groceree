@@ -77,7 +77,7 @@ public class ItemDataSource {
         List<Item> items = new ArrayList<Item>();
 
         Cursor cursor = database.query( MySQLiteHelper.TABLE_ITEM, allColumns,
-                MySQLiteHelper.COLUMN_ISDELETED + " =?", new String[] { String.valueOf( false ) }, null, null, null );
+                MySQLiteHelper.COLUMN_ISDELETED + " =?", new String[] { String.valueOf( 0 ) }, null, null, null );
 
         cursor.moveToFirst();
 
