@@ -30,13 +30,12 @@ public class ItemDataSource {
     }
 
     public Item createItem( String item ) {
-        Long currentTime = System.currentTimeMillis() / 1000;
 
         ContentValues values = new ContentValues();
         values.put( MySQLiteHelper.COLUMN_ITEM, item );
         values.put( MySQLiteHelper.COLUMN_ISMARKED, 0 );    // default is false
         values.put( MySQLiteHelper.COLUMN_ISDELETED, 0 );   // default is false
-        values.put( MySQLiteHelper.COLUMN_TIMESTAMP, currentTime );
+        values.put( MySQLiteHelper.COLUMN_TIMESTAMP, getCurrentTime() );
         long insertId = database.insert( MySQLiteHelper.TABLE_ITEM, null, values );
 
         Cursor cursor = database.query( MySQLiteHelper.TABLE_ITEM, allColumns, MySQLiteHelper.COLUMN_ID
@@ -52,6 +51,16 @@ public class ItemDataSource {
     }
 
     // TODO: Update item
+    public int updateItem( Item item ) {
+        ContentValues values = new ContentValues();
+        values.put( MySQLiteHelper.COLUMN_ITEM, item.toString() );
+        values.put( MySQLiteHelper.COLUMN_ISMARKED, item.isMarked() );
+        values.put( MySQLiteHelper.COLUMN_ISDELETED, item.isDeleted() );
+        values.put( MySQLiteHelper.COLUMN_TIMESTAMP, getCurrentTime() );
+
+        return database.update( MySQLiteHelper.TABLE_ITEM, values, MySQLiteHelper.COLUMN_ID + " =?",
+                new String[] { String.valueOf( item.getId() ) } );
+    }
 
     public void deleteItem( Item item ) {
         long id = item.getId();
@@ -59,6 +68,28 @@ public class ItemDataSource {
         System.out.println( "Entry deleted with id: " + id );
         database.delete( MySQLiteHelper.TABLE_ITEM, MySQLiteHelper.COLUMN_ID + " = "
          + id, null);
+    }
+
+    // Method used by 'MainActivity' to get all items with 'isDeleted' set to false.
+    // Basically gets all items on the list that haven't been deleted.
+    public List<Item> getAllActiveItems() {
+        System.out.println( "Running getAllActiveItems" );
+        List<Item> items = new ArrayList<Item>();
+
+        Cursor cursor = database.query( MySQLiteHelper.TABLE_ITEM, allColumns,
+                MySQLiteHelper.COLUMN_ISDELETED + " =?", new String[] { String.valueOf( false ) }, null, null, null );
+
+        cursor.moveToFirst();
+
+        while( !cursor.isAfterLast() ) {
+            Item item = cursorToItem( cursor );
+            items.add( item );
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+        return items;
     }
 
     public List<Item> getAllItems() {
@@ -100,9 +131,12 @@ public class ItemDataSource {
         }
 
         item.setTimeStamp( cursor.getInt( 4 ) );
-        System.out.println( "TimeStamp: " + cursor.getInt( 4 ) );
 
         return item;
+    }
+
+    private long getCurrentTime() {
+        return System.currentTimeMillis() / 1000;
     }
 
 }

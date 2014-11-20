@@ -33,7 +33,7 @@ public class MainActivity extends ListActivity {
         dataSource = new ItemDataSource( this );
         dataSource.open();
 
-        List<Item> items = dataSource.getAllItems();
+        final List<Item> items = dataSource.getAllActiveItems();
 
         // TODO: replace 'simple_list_item_1' with something to include the TimeStamp column (for debugging)
         final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
@@ -74,15 +74,15 @@ public class MainActivity extends ListActivity {
 
             @Override
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
+                switch( menuItem.getItemId() ) {
                     case R.id.delete_item:
                         // TODO: mark item as deleted
                         // Mark items at position as deleted
                         SparseBooleanArray selected = mAdapter.getmSelectedItems();
 
-                        for (int i = (selected.size() - 1); i >= 0; i--) {
-                            if (selected.valueAt(i)) {
-                                // Do something here
+                        for ( int i = (selected.size() - 1); i >= 0; i-- ) {
+                            if( selected.valueAt( i ) ) {
+                                markedItemDeleted( i );
                             }
                         }
 
@@ -108,33 +108,62 @@ public class MainActivity extends ListActivity {
         });
 
         // onClick listener to stikethrough text and 'mark' the item in the database
-        // TODO: Figure out how to properly test for flags
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                Item item = items.get( position );
+                boolean isMarked = false;
                 TextView tvItem = (TextView) view.findViewById(android.R.id.text1);
 
+                // TODO: I could really extend TextView here to toggle the stikethrough more elegantly.
+                // If item is marked with a strikethrough, remove
                 if ((tvItem.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG) > 0) {
                     tvItem.setPaintFlags(tvItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+
+                // Else remove the strikethrough
                 } else {
                     tvItem.setPaintFlags(tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+
+                    isMarked = true;
                 }
+
+                // Update our item in the database
+                item.setMarked( isMarked );
+                dataSource.updateItem( item );
+
             }
         });
     }
 
     public void insertItem( View view ) {
-        ArrayAdapter<Item> adapter = ( ArrayAdapter<Item> ) getListAdapter();
+        SelectionAdapter adapter = ( SelectionAdapter ) getListAdapter();
 
         // Get item name from editText
         EditText editText = ( EditText ) findViewById( R.id.enter_string );
         String itemName = editText.getText().toString();
+
+        // Clear editText
+        editText.setText( "" );
 
         // insert new item in to the database
         Item item = dataSource.createItem( itemName );
         adapter.add( item );
         String message = String.format( "%s entered", item );
         Log.w(MySQLiteHelper.class.getName(), message);
+    }
+
+    // Set item as 'deleted' and therefore no longer needed on the list.
+    public void markedItemDeleted( int itemID ) {
+        SelectionAdapter adapter = ( SelectionAdapter ) getListAdapter();
+        Item item = adapter.getItem( itemID );
+
+        // Update item in the database
+        item.setDeleted( true );
+        dataSource.updateItem( item );
+
+        // Remove item from the adapter
+        adapter.remove( item );
+        adapter.notifyDataSetChanged();
     }
 
     @Override

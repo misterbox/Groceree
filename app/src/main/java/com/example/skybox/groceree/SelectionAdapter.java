@@ -1,8 +1,8 @@
 package com.example.skybox.groceree;
 
 import android.content.Context;
+import android.graphics.Paint;
 import android.util.SparseBooleanArray;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
@@ -54,24 +54,17 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
 
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
-        /*
         Item item = items.get( position );
+        View v = super.getView( position, convertView, parent ); // Let the adapter handle setting up the row views
+        TextView tvItem = ( TextView ) v.findViewById( android.R.id.text1 );
 
-        if( convertView == null ) {
-            convertView = LayoutInflater.from( context ).inflate( R.layout.listview_row_item, parent, false );
+        // Determine if Item 'isMarked' to set strikethrough
+        if( item.isMarked() ){
+            tvItem.setPaintFlags(tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        } else {
+            tvItem.setPaintFlags(tvItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
 
-
-        convertView.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
-
-        TextView tvItem = ( TextView ) convertView.findViewById( R.id.textViewItem );
-        TextView tvTimeStamp = ( TextView ) convertView.findViewById( R.id.textViewTimeStamp );
-
-        tvItem.setText( item.toString() );
-        tvTimeStamp.setText( Long.toString( item.getTimeStamp() ) );
-        */
-
-        View v = super.getView( position, convertView, parent ); //// Let the adapter handle setting up the row views
         v.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 
         if( mSelectedItems.get( position ) != false ) {
