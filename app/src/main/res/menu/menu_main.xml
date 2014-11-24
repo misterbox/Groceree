@@ -5,4 +5,6 @@
 
     <item android:id="@+id/action_showdb"
         android:title="Show DB"/>
+    <item android:id="@+id/action_server_list"
+        android:title="Get Server List"/>
 </menu>

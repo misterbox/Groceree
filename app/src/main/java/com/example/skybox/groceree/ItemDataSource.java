@@ -73,7 +73,6 @@ public class ItemDataSource {
     // Method used by 'MainActivity' to get all items with 'isDeleted' set to false.
     // Basically gets all items on the list that haven't been deleted.
     public List<Item> getAllActiveItems() {
-        System.out.println( "Running getAllActiveItems" );
         List<Item> items = new ArrayList<Item>();
 
         Cursor cursor = database.query( MySQLiteHelper.TABLE_ITEM, allColumns,

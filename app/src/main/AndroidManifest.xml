@@ -29,6 +29,14 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.skybox.groceree.MainActivity" />
         </activity>
+        <activity
+            android:name="com.example.skybox.groceree.ServerList"
+            android:label="@string/title_activity_server_list"
+            android:parentActivityName="com.example.skybox.groceree.MainActivity" >
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.example.skybox.groceree.MainActivity" />
+        </activity>
     </application>
 
 </manifest>

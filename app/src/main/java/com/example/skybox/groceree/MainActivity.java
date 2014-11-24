@@ -15,7 +15,6 @@ import android.view.View;
 import android.view.inputmethod.EditorInfo;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -40,7 +39,6 @@ public class MainActivity extends ListActivity {
 
         final List<Item> items = dataSource.getAllActiveItems();
 
-        // TODO: replace 'simple_list_item_1' with something to include the TimeStamp column (for debugging)
         final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
 
         setListAdapter( mAdapter );
@@ -67,7 +65,7 @@ public class MainActivity extends ListActivity {
             public boolean onCreateActionMode(ActionMode actionMode, Menu menu) {
                 numRows = 0;
                 MenuInflater inflater = getMenuInflater();
-                inflater.inflate(R.menu.menu, menu);
+                inflater.inflate(R.menu.cab_menu, menu);
 
                 return true;
             }
@@ -81,7 +79,6 @@ public class MainActivity extends ListActivity {
             public boolean onActionItemClicked(ActionMode actionMode, MenuItem menuItem) {
                 switch( menuItem.getItemId() ) {
                     case R.id.delete_item:
-                        // TODO: mark item as deleted
                         // Mark items at position as deleted
                         SparseBooleanArray selected = mAdapter.getmSelectedItems();
 
@@ -188,7 +185,7 @@ public class MainActivity extends ListActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
+        // Inflate the CAB_menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -206,6 +203,9 @@ public class MainActivity extends ListActivity {
         } else if( id == R.id.action_showdb ) {
             Intent intent = new Intent( this, ShowDB.class );
             startActivity( intent );
+        } else if( id == R.id.action_server_list) {
+            Intent intent = new Intent( this, ServerList.class );
+            startActivity(intent);
         }
 
         return super.onOptionsItemSelected(item);

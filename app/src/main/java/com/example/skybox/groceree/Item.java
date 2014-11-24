@@ -11,7 +11,7 @@ public class Item {
     private String item; //Column index 1
     private boolean isMarked;   // Column index 2
     private boolean isDeleted; // Column index 3
-    private long timeStamp; // Column index 4
+    private long timestamp; // Column index 4
 
 
     public long getId() {
@@ -52,7 +52,7 @@ public class Item {
     }
 
     public long getTimeStamp() {
-        return timeStamp;
+        return timestamp;
     }
 
     // Helper function to get item TimeStamp as human-readable string.
@@ -60,10 +60,10 @@ public class Item {
     public String getTimeStampString() {
         SimpleDateFormat dateFormat = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss",
                 Locale.getDefault() );
-        return dateFormat.format( timeStamp * 1000 );
+        return dateFormat.format( timestamp * 1000 );
     }
 
-    public void setTimeStamp( int timeStamp ) {
-        this.timeStamp = timeStamp;
+    public void setTimeStamp( long timeStamp ) {
+        this.timestamp = timeStamp;
     }
 }
