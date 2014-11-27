@@ -13,6 +13,19 @@ public class Item {
     private boolean isDeleted; // Column index 3
     private long timestamp; // Column index 4
 
+    @Override
+    public boolean equals( Object o ) {
+        if( ( o != null ) && ( o.getClass().equals( this.getClass() ) ) ) {
+            return o.toString().equals( this.toString() );
+        }
+
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
 
     public long getId() {
         return id;

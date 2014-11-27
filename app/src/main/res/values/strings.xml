@@ -7,7 +7,6 @@
     <string name="new_item">New Item</string>
     <string name="delete_item">Delete</string>
     <string name="title_activity_show_db">ShowDB</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_server_list">ServerList</string>
 
 </resources>

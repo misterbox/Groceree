@@ -14,8 +14,8 @@ import java.util.List;
 public class ItemDataSource {
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
-    private String[] allColumns = { MySQLiteHelper.COLUMN_ID, MySQLiteHelper.COLUMN_ITEM,
-        MySQLiteHelper.COLUMN_ISMARKED, MySQLiteHelper.COLUMN_ISDELETED, MySQLiteHelper.COLUMN_TIMESTAMP };
+    private String[] allColumns = { MySQLiteHelper.COLUMN_ITEM_ID, MySQLiteHelper.COLUMN_ITEM,
+        MySQLiteHelper.COLUMN_ISMARKED, MySQLiteHelper.COLUMN_ISDELETED, MySQLiteHelper.COLUMN_ITEM_TIMESTAMP };
 
     public ItemDataSource( Context context ) {
         dbHelper = new MySQLiteHelper( context );
@@ -35,10 +35,10 @@ public class ItemDataSource {
         values.put( MySQLiteHelper.COLUMN_ITEM, item );
         values.put( MySQLiteHelper.COLUMN_ISMARKED, 0 );    // default is false
         values.put( MySQLiteHelper.COLUMN_ISDELETED, 0 );   // default is false
-        values.put( MySQLiteHelper.COLUMN_TIMESTAMP, getCurrentTime() );
+        values.put( MySQLiteHelper.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
         long insertId = database.insert( MySQLiteHelper.TABLE_ITEM, null, values );
 
-        Cursor cursor = database.query( MySQLiteHelper.TABLE_ITEM, allColumns, MySQLiteHelper.COLUMN_ID
+        Cursor cursor = database.query( MySQLiteHelper.TABLE_ITEM, allColumns, MySQLiteHelper.COLUMN_ITEM_ID
          + " = " + insertId, null, null, null, null );
         cursor.moveToFirst();
         Item newItem = cursorToItem( cursor );
@@ -50,15 +50,32 @@ public class ItemDataSource {
         return newItem;
     }
 
+    public boolean insertItem( Item item ) {
+        if( item == null ) {
+            return false;
+        }
+
+        ContentValues values = new ContentValues();
+        values.put( MySQLiteHelper.COLUMN_ITEM, item.toString() );
+        values.put( MySQLiteHelper.COLUMN_ISMARKED, item.isMarked() );    // default is false
+        values.put( MySQLiteHelper.COLUMN_ISDELETED, item.isDeleted() );   // default is false
+        values.put( MySQLiteHelper.COLUMN_ITEM_TIMESTAMP, item.getTimeStamp() );
+        long insertId = database.insert( MySQLiteHelper.TABLE_ITEM, null, values );
+
+        item.setId( insertId );
+
+        return true;
+    }
+
     // TODO: Update item
     public int updateItem( Item item ) {
         ContentValues values = new ContentValues();
         values.put( MySQLiteHelper.COLUMN_ITEM, item.toString() );
         values.put( MySQLiteHelper.COLUMN_ISMARKED, item.isMarked() );
         values.put( MySQLiteHelper.COLUMN_ISDELETED, item.isDeleted() );
-        values.put( MySQLiteHelper.COLUMN_TIMESTAMP, getCurrentTime() );
+        values.put( MySQLiteHelper.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
 
-        return database.update( MySQLiteHelper.TABLE_ITEM, values, MySQLiteHelper.COLUMN_ID + " =?",
+        return database.update( MySQLiteHelper.TABLE_ITEM, values, MySQLiteHelper.COLUMN_ITEM_ID + " =?",
                 new String[] { String.valueOf( item.getId() ) } );
     }
 
@@ -66,7 +83,7 @@ public class ItemDataSource {
         long id = item.getId();
 
         System.out.println( "Entry deleted with id: " + id );
-        database.delete( MySQLiteHelper.TABLE_ITEM, MySQLiteHelper.COLUMN_ID + " = "
+        database.delete( MySQLiteHelper.TABLE_ITEM, MySQLiteHelper.COLUMN_ITEM_ID + " = "
          + id, null);
     }
 

@@ -22,7 +22,8 @@ import android.widget.TextView;
 import java.util.List;
 
 public class MainActivity extends ListActivity {
-    private ItemDataSource dataSource;
+    private ItemDataSource itemDataSource;
+    private ServerDataSource servDataSource;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,14 +35,17 @@ public class MainActivity extends ListActivity {
         EditText etEnterString = ( EditText ) findViewById( R.id.enter_string );
 
         // First get all items from database and populate our ListView
-        dataSource = new ItemDataSource( this );
-        dataSource.open();
+        itemDataSource = new ItemDataSource( this );
+        itemDataSource.open();
 
-        final List<Item> items = dataSource.getAllActiveItems();
+        final List<Item> items = itemDataSource.getAllActiveItems();
 
         final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
 
         setListAdapter( mAdapter );
+
+        // Establish our server check-ins
+        servDataSource = new ServerDataSource( this, items, mAdapter );
 
         // Setup our MultiChoiceModeListener for the CAB
         listView.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE_MODAL );
@@ -131,7 +135,7 @@ public class MainActivity extends ListActivity {
 
                 // Update our item in the database
                 item.setMarked( isMarked );
-                dataSource.updateItem( item );
+                itemDataSource.updateItem( item );
 
             }
         });
@@ -163,7 +167,7 @@ public class MainActivity extends ListActivity {
         editText.setText("");
 
         // insert new item in to the database
-        Item item = dataSource.createItem( itemName );
+        Item item = itemDataSource.createItem( itemName );
         adapter.add( item );
         String message = String.format( "%s entered", item );
         Log.w(MySQLiteHelper.class.getName(), message);
@@ -176,7 +180,7 @@ public class MainActivity extends ListActivity {
 
         // Update item in the database
         item.setDeleted( true );
-        dataSource.updateItem( item );
+        itemDataSource.updateItem( item );
 
         // Remove item from the adapter
         adapter.remove(item);
@@ -209,5 +213,12 @@ public class MainActivity extends ListActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStop() {
+        //itemDataSource.close();
+
+        super.onStop();
     }
 }
