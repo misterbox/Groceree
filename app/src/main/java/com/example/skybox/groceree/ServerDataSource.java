@@ -84,13 +84,16 @@ public class ServerDataSource {
                     itemsStored.add( item );
 
                     // Attempt to insert item in to db.
-                    if( !itemDataSource.insertItem( item ) ) {
+                    long insertId = itemDataSource.insertItem( item );
+                    if( insertId == -1 ) {
                         Log.w( TAG, "Error inserting new Item in to database" );
+                    } else {
+                        item.setId( insertId );
                     }
 
-                    //adapter.add( item );
                 } else {
                     // Replace Item with item received
+                    itemsStored.set( index, item );
                 }
             }
 

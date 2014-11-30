@@ -34,11 +34,13 @@ public class ItemAdapter extends ArrayAdapter<Item> {
 
         convertView.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 
+        TextView tvId = ( TextView ) convertView.findViewById( R.id.textViewID );
         TextView tvItem = ( TextView ) convertView.findViewById( R.id.textViewItem );
         TextView tvTimeStamp = (TextView) convertView.findViewById( R.id.textViewTimeStamp );
         TextView tvMarked = ( TextView ) convertView.findViewById( R.id.tvMarked );
         TextView tvDeleted = ( TextView ) convertView.findViewById( R.id.tvDeleted );
 
+        tvId.setText( String.valueOf( item.getId() ) );
         tvItem.setText( item.toString() );
         tvTimeStamp.setText( Long.toString( item.getTimeStamp() ) );
         tvMarked.setText( String.valueOf( item.isMarked() ) );
