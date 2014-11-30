@@ -50,9 +50,9 @@ public class ItemDataSource {
         return newItem;
     }
 
-    public boolean insertItem( Item item ) {
+    public long insertItem( Item item ) {
         if( item == null ) {
-            return false;
+            return -1;
         }
 
         ContentValues values = new ContentValues();
@@ -64,7 +64,7 @@ public class ItemDataSource {
 
         item.setId( insertId );
 
-        return true;
+        return insertId;
     }
 
     // TODO: Update item
@@ -82,7 +82,6 @@ public class ItemDataSource {
     public void deleteItem( Item item ) {
         long id = item.getId();
 
-        System.out.println( "Entry deleted with id: " + id );
         database.delete( MySQLiteHelper.TABLE_ITEM, MySQLiteHelper.COLUMN_ITEM_ID + " = "
          + id, null);
     }
