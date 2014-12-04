@@ -164,7 +164,7 @@ public class MainActivity extends ListActivity {
         String itemName = editText.getText().toString();
 
         // Clear editText
-        editText.setText("");
+        editText.setText( "" );
 
         // insert new item in to the database
         Item item = itemDataSource.createItem( itemName );
@@ -201,15 +201,23 @@ public class MainActivity extends ListActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        } else if( id == R.id.action_showdb ) {
-            Intent intent = new Intent( this, ShowDB.class );
-            startActivity( intent );
-        } else if( id == R.id.action_server_list) {
-            Intent intent = new Intent( this, ServerList.class );
-            startActivity(intent);
+        switch ( id ) {
+            case R.id.action_settings:
+                return true;
+
+            case R.id.action_showdb:
+                Intent intent = new Intent( this, ShowDB.class );
+                startActivity( intent );
+                break;
+
+            case R.id.action_server_list:
+                intent = new Intent( this, ServerList.class );
+                startActivity(intent);
+                break;
+
+            case R.id.action_server_sync:
+                servDataSource.serverSync();
+                break;
         }
 
         return super.onOptionsItemSelected(item);

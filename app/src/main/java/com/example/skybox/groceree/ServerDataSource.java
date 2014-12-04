@@ -59,8 +59,6 @@ public class ServerDataSource {
         itemsReceived = new ArrayList<Item>();
         itemDataSource = new ItemDataSource( context );
         itemDataSource.open();
-
-        getItemsFromServer();
     }
 
     /*
@@ -75,25 +73,23 @@ public class ServerDataSource {
         // If items were received
         if( !servItems.isEmpty() ) {
             for( Iterator<Item> i = servItems.iterator(); i.hasNext(); ) {
-                Item item = i.next();
+                Item newItem = i.next();
 
-                int index = itemsStored.indexOf( item );
+                int index = itemsStored.indexOf( newItem );
                 // If Item is not found in 'itemsStored'
                 if( index == -1 ){
-                    // Insert in to 'itemsStore' and db
-                    itemsStored.add( item );
+                    // Attempt to insert newItem in to db.
+                    long insertId = itemDataSource.insertItem( newItem );
 
-                    // Attempt to insert item in to db.
-                    long insertId = itemDataSource.insertItem( item );
                     if( insertId == -1 ) {
                         Log.w( TAG, "Error inserting new Item in to database" );
                     } else {
-                        item.setId( insertId );
+                        itemsStored.add( newItem );
                     }
 
                 } else {
-                    // Replace Item with item received
-                    itemsStored.set( index, item );
+                    // Replace Item with newItem received
+                    itemsStored.set( index, newItem );
                 }
             }
 
@@ -102,7 +98,7 @@ public class ServerDataSource {
         }
     }
 
-    private void getItemsFromServer() {
+    public void serverSync() {
         // Clear all items received before fetching a new list
         itemsReceived.clear();
 

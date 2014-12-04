@@ -4,7 +4,9 @@
         android:orderInCategory="100" android:showAsAction="never" />
 
     <item android:id="@+id/action_showdb"
-        android:title="Show DB"/>
+        android:title="@string/action_show_db"/>
     <item android:id="@+id/action_server_list"
-        android:title="Get Server List"/>
+        android:title="@string/action_server_list"/>
+    <item android:id="@+id/action_server_sync"
+        android:title="@string/action_server_sync"/>
 </menu>

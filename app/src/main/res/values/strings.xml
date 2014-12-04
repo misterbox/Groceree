@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Activity Main -->
     <string name="app_name">Groceree</string>
     <string name="action_settings">Settings</string>
-    <string name="add_item">Add Item</string>
     <string name="new_item">New Item</string>
+
+    <!-- CAB menu -->
     <string name="delete_item">Delete</string>
+
+    <!-- Activities -->
     <string name="title_activity_show_db">ShowDB</string>
     <string name="title_activity_server_list">ServerList</string>
+
+    <!-- Activity Main options menu -->
+    <string name="action_show_db">Show Database</string>
+    <string name="action_server_list">Get Server List</string>
+    <string name="action_server_sync">Server Sync</string>
 
 </resources>
