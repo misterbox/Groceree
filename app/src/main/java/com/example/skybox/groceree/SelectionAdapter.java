@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -50,6 +51,13 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
     public void clearSelection() {
         mSelectedItems = new SparseBooleanArray();
         notifyDataSetChanged();
+    }
+
+    @Override
+    public void add( Item item ) {
+        super.add( item );
+
+        Collections.sort( items );
     }
 
     @Override

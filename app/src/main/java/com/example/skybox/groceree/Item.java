@@ -6,7 +6,7 @@ import java.util.Locale;
 /**
  * Created by skybox on 11/12/14.
  */
-public class Item {
+public class Item implements Comparable<Item> {
     private long id; // Column index 0
     private String item; //Column index 1
     private boolean isMarked;   // Column index 2
@@ -25,6 +25,10 @@ public class Item {
     @Override
     public int hashCode() {
         return 0;
+    }
+
+    public int compareTo( Item another ) {
+        return this.toString().compareTo( another.toString() );
     }
 
     public long getId() {
