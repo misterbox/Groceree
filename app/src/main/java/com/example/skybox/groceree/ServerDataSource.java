@@ -4,10 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -105,9 +107,9 @@ public class ServerDataSource {
         // Check last check-in timestamp
         // If timestamp is 0, we've never checked in, so we get all active items from the server
         if( lastCheckIn == 0 ) {
-            JsonArrayRequest jsonReq = new JsonArrayRequest( serverURL + listEndPoint, new Response.Listener<JSONArray>() {
+            JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.GET, serverURL + listEndPoint, null, new Response.Listener<JSONObject>() {
                 @Override
-                public void onResponse( JSONArray response ) {
+                public void onResponse( JSONObject response ) {
                     Log.i(TAG, response.toString());
                     List<Item> servItems = parseJSON( response );
 
@@ -126,12 +128,15 @@ public class ServerDataSource {
         }
     }
 
-    private List<Item> parseJSON( JSONArray json ) {
+    private List<Item> parseJSON( JSONObject json ) {
         List<Item> items = new ArrayList<Item>();
 
         try {
-            for( int i = 0; i < json.length(); i++ ) {
-                JSONObject item = json.getJSONObject( i );
+            long timestamp = json.optLong( "timestamp" );
+            JSONArray itemsAry = json.getJSONArray( "items" );
+
+            for( int i = 0; i < itemsAry.length(); i++ ) {
+                JSONObject item = itemsAry.getJSONObject( i );
                 Item newItem = new Item();
                 newItem.setItem( item.optString( "name" ) );
                 newItem.setMarked( item.optBoolean( "isMarked" ) );

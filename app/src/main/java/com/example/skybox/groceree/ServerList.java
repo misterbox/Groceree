@@ -7,10 +7,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
@@ -36,9 +38,9 @@ public class ServerList extends ListActivity {
         mRequestQueue = Volley.newRequestQueue( this );
         String url = "http://theskyegriffin.com:8000/list";
 
-        JsonArrayRequest jsonReq = new JsonArrayRequest( url, new Response.Listener<JSONArray>() {
+        JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
-            public void onResponse( JSONArray response ) {
+            public void onResponse( JSONObject response ) {
                 Log.i(TAG, response.toString() );
                 itemsReceived = parseJSON( response );
                 adapter = new ItemAdapter( context, R.layout.listview_row_item, itemsReceived );
@@ -56,12 +58,16 @@ public class ServerList extends ListActivity {
 
     }
 
-    private List<Item> parseJSON( JSONArray json ) {
+    private List<Item> parseJSON( JSONObject json ) {
         List<Item> items = new ArrayList<Item>();
 
         try {
-            for( int i = 0; i < json.length(); i++ ) {
-                JSONObject item = json.getJSONObject( i );
+            long timestamp = json.optLong( "timestamp" );
+            System.out.println( "timestamp object: " + timestamp );
+            JSONArray itemsAry = json.getJSONArray( "items" );
+
+            for( int i = 0; i < itemsAry.length(); i++ ) {
+                JSONObject item = itemsAry.getJSONObject( i );
                 Item newItem = new Item();
                 newItem.setItem( item.optString( "name" ) );
                 newItem.setMarked( item.optBoolean( "isMarked" ) );
