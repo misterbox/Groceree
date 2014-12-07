@@ -8,7 +8,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -55,7 +54,6 @@ public class ServerDataSource {
         prefEditor = sharedPref.edit();
 
         this.lastCheckIn = getLastCheckIn();
-        System.out.println( "last check-in: " + lastCheckIn );
         mRequestQueue = Volley.newRequestQueue( context );
 
         itemsReceived = new ArrayList<Item>();
@@ -63,7 +61,10 @@ public class ServerDataSource {
         itemDataSource.open();
     }
 
+    // TODO: Should we use a ConnectionMananger here to determine if the network is available?
     public void serverSync() {
+        System.out.println( "last check-in: " + lastCheckIn );
+
         // Clear all items received before fetching a new list
         itemsReceived.clear();
 
@@ -71,20 +72,7 @@ public class ServerDataSource {
         // If timestamp is 0, we've never checked in, so we get all active items from the server
         // GET request to '/list' endpoint
         if( lastCheckIn == 0 ) {
-            JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.GET, serverURL + listEndPoint, null, new Response.Listener<JSONObject>() {
-                @Override
-                public void onResponse( JSONObject response ) {
-                    Log.i(TAG, response.toString());
-                    List<Item> servItems = parseJSON( response );
-
-                    updateItemList( servItems );
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse( VolleyError error ) {
-                    Log.i( TAG, error.getMessage() );
-                }
-            });
+            JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.GET, serverURL + listEndPoint, null, new jsonRespListener(), new jsonRespErrListener() );
 
             mRequestQueue.add( jsonReq );
         } else {
@@ -96,12 +84,15 @@ public class ServerDataSource {
                 Item item = i.next();
 
                 // Add item to 'postItems' list if it has been updated since our last check-in
+                System.out.println( "item considered: " + item.toString() );
+                System.out.println( "item timestamp: " + item.getTimeStamp() );
                 if( item.getTimeStamp() > lastCheckIn ) {
+                    System.out.println( "Adding updated item: " + item.toString() );
                     updatedItems.add( item );
                 }
             }
             // Convert 'updatedItems' to JSON array
-            JSONArray itemsAry = new JSONArray( updatedItems );
+            JSONArray itemsAry = itemsToJSONAry( updatedItems );
             JSONObject postObj = new JSONObject();
 
             // Build our JSON object to post
@@ -112,7 +103,38 @@ public class ServerDataSource {
                 e.printStackTrace();
             }
 
-            JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.POST, serverURL + syncEndPoint, )
+            JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.POST, serverURL + syncEndPoint, postObj, new jsonRespListener(), new jsonRespErrListener() );
+
+            mRequestQueue.add( jsonReq );
+        }
+    }
+
+    // TODO: I'm have to build each JSON object myself consisting of all data within each Item
+    private JSONArray itemsToJSONAry( List<Item> itemsList ) {
+        JSONArray itemsJSONAry = new JSONArray();
+
+        for( Iterator<Item> i = itemsList.iterator(); i.hasNext(); ) {
+            Item item = i.next();
+            itemsJSONAry.put( item );
+        }
+
+        return itemsJSONAry;
+    }
+
+    private class jsonRespListener implements Response.Listener<JSONObject> {
+        @Override
+        public void onResponse( JSONObject response ) {
+            Log.i(TAG, response.toString());
+            List<Item> servItems = parseJSON( response );
+
+            updateItemList( servItems );
+        }
+    }
+
+    private class jsonRespErrListener implements Response.ErrorListener {
+        @Override
+        public void onErrorResponse( VolleyError error ) {
+            Log.i( TAG, error.getMessage() );
         }
     }
 
