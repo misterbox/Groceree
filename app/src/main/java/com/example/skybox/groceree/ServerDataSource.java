@@ -69,6 +69,7 @@ public class ServerDataSource {
 
         // Check last check-in timestamp
         // If timestamp is 0, we've never checked in, so we get all active items from the server
+        // GET request to '/list' endpoint
         if( lastCheckIn == 0 ) {
             JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.GET, serverURL + listEndPoint, null, new Response.Listener<JSONObject>() {
                 @Override
@@ -87,7 +88,31 @@ public class ServerDataSource {
 
             mRequestQueue.add( jsonReq );
         } else {
-            //  POST something
+            // POST request to '/syncItems' endpoint
+            List<Item> updatedItems = new ArrayList<Item>();
+
+            // Go through the items we have and select those that have been updated since 'lastCheckIn'
+            for( Iterator<Item> i = itemsStored.iterator(); i.hasNext(); ){
+                Item item = i.next();
+
+                // Add item to 'postItems' list if it has been updated since our last check-in
+                if( item.getTimeStamp() > lastCheckIn ) {
+                    updatedItems.add( item );
+                }
+            }
+            // Convert 'updatedItems' to JSON array
+            JSONArray itemsAry = new JSONArray( updatedItems );
+            JSONObject postObj = new JSONObject();
+
+            // Build our JSON object to post
+            try {
+                postObj.put( "timestamp", lastCheckIn );
+                postObj.put( "items", itemsAry );
+            } catch( Exception e ) {
+                e.printStackTrace();
+            }
+
+            JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.POST, serverURL + syncEndPoint, )
         }
     }
 
