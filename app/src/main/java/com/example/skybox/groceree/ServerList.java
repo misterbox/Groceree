@@ -63,7 +63,6 @@ public class ServerList extends ListActivity {
 
         try {
             long timestamp = json.optLong( "timestamp" );
-            System.out.println( "timestamp object: " + timestamp );
             JSONArray itemsAry = json.getJSONArray( "items" );
 
             for( int i = 0; i < itemsAry.length(); i++ ) {

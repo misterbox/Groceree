@@ -63,43 +63,6 @@ public class ServerDataSource {
         itemDataSource.open();
     }
 
-    /*
-        Takes items from server (servItems) and compares them to items we currently have (itemsStored).
-        For each item received:
-            Check if item exists in 'itemsStored'
-                If true, replace with item received
-            If false
-                Insert in to db and 'itemsStored'
-    */
-    private void updateItemList( List<Item> servItems ) {
-        // If items were received
-        if( !servItems.isEmpty() ) {
-            for( Iterator<Item> i = servItems.iterator(); i.hasNext(); ) {
-                Item newItem = i.next();
-
-                int index = itemsStored.indexOf( newItem );
-                // If Item is not found in 'itemsStored'
-                if( index == -1 ){
-                    // Attempt to insert newItem in to db.
-                    long insertId = itemDataSource.insertItem( newItem );
-
-                    if( insertId == -1 ) {
-                        Log.w( TAG, "Error inserting new Item in to database" );
-                    } else {
-                        itemsStored.add( newItem );
-                    }
-
-                } else {
-                    // Replace Item with newItem received
-                    itemsStored.set( index, newItem );
-                }
-            }
-
-            lastCheckIn = setLastCheckIn();
-            adapter.notifyDataSetChanged();
-        }
-    }
-
     public void serverSync() {
         // Clear all items received before fetching a new list
         itemsReceived.clear();
@@ -148,6 +111,9 @@ public class ServerDataSource {
 
                 items.add( newItem );
             }
+
+            // Update lastCheckIn timestamp
+            lastCheckIn = setLastCheckIn( timestamp );
         } catch( Exception e ) {
             e.printStackTrace();
         }
@@ -155,12 +121,47 @@ public class ServerDataSource {
         return items;
     }
 
+    /*
+        Takes items from server (servItems) and compares them to items we currently have (itemsStored).
+        For each item received:
+            Check if item exists in 'itemsStored'
+                If true, replace with item received
+            If false
+                Insert in to db and 'itemsStored'
+    */
+    private void updateItemList( List<Item> servItems ) {
+        // If items were received
+        if( !servItems.isEmpty() ) {
+            for( Iterator<Item> i = servItems.iterator(); i.hasNext(); ) {
+                Item newItem = i.next();
+
+                int index = itemsStored.indexOf( newItem );
+                // If Item is not found in 'itemsStored'
+                if( index == -1 ){
+                    // Attempt to insert newItem in to db.
+                    long insertId = itemDataSource.insertItem( newItem );
+
+                    if( insertId == -1 ) {
+                        Log.w( TAG, "Error inserting new Item in to database" );
+                    } else {
+                        itemsStored.add( newItem );
+                    }
+
+                } else {
+                    // Replace Item with newItem received
+                    itemsStored.set( index, newItem );
+                }
+            }
+
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     private long getLastCheckIn() {
         return sharedPref.getLong( TIMESTAMP_PREF, 0 );
     }
 
-    private long setLastCheckIn() {
-        long timestamp = getCurrentTime();
+    private long setLastCheckIn( long timestamp ) {
         prefEditor.putLong( TIMESTAMP_PREF, timestamp );
         prefEditor.commit();
 
