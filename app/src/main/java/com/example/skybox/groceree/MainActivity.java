@@ -88,7 +88,7 @@ public class MainActivity extends ListActivity {
 
                         for ( int i = (selected.size() - 1); i >= 0; i-- ) {
                             if( selected.valueAt( i ) ) {
-                                markedItemDeleted( i );
+                                markedItemDeleted( selected.keyAt( i ) );
                             }
                         }
 

@@ -60,6 +60,10 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
         Collections.sort( items );
     }
 
+    public void sort() {
+        Collections.sort( items );
+    }
+
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
         Item item = items.get( position );
