@@ -113,9 +113,19 @@ public class ServerDataSource {
     private JSONArray itemsToJSONAry( List<Item> itemsList ) {
         JSONArray itemsJSONAry = new JSONArray();
 
-        for( Iterator<Item> i = itemsList.iterator(); i.hasNext(); ) {
-            Item item = i.next();
-            itemsJSONAry.put( item );
+        try {
+            for( Iterator<Item> i = itemsList.iterator(); i.hasNext(); ) {
+                Item item = i.next();
+                JSONObject itemObj = new JSONObject();
+                itemObj.put( "item", item.toString() );
+                itemObj.put( "isMarked", item.isMarked() );
+                itemObj.put( "isDeleted", item.isDeleted() );
+                itemObj.put( "timestamp", item.getTimeStamp() );
+
+                itemsJSONAry.put( itemObj );
+            }
+        } catch( Exception e ) {
+            e.printStackTrace();
         }
 
         return itemsJSONAry;
@@ -161,6 +171,7 @@ public class ServerDataSource {
 
             // Update lastCheckIn timestamp
             lastCheckIn = setLastCheckIn( timestamp );
+            System.out.println( "TIMESTAMP SET: " + lastCheckIn );
         } catch( Exception e ) {
             e.printStackTrace();
         }

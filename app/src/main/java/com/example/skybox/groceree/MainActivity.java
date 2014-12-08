@@ -135,7 +135,8 @@ public class MainActivity extends ListActivity {
 
                 // Update our item in the database
                 item.setMarked( isMarked );
-                itemDataSource.updateItem( item );
+                item.setTimeStamp( itemDataSource.getCurrentTime() );
+                itemDataSource.updateItem( item, itemDataSource.getCurrentTime() );
 
             }
         });
@@ -180,7 +181,7 @@ public class MainActivity extends ListActivity {
 
         // Update item in the database
         item.setDeleted( true );
-        itemDataSource.updateItem( item );
+        itemDataSource.updateItem( item, itemDataSource.getCurrentTime() );
 
         // Remove item from the adapter
         adapter.remove(item);

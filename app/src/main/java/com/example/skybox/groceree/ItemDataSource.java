@@ -68,12 +68,12 @@ public class ItemDataSource {
     }
 
     // TODO: Update item
-    public int updateItem( Item item ) {
+    public int updateItem( Item item, long timestamp ) {
         ContentValues values = new ContentValues();
         values.put( MySQLiteHelper.COLUMN_ITEM, item.toString() );
         values.put( MySQLiteHelper.COLUMN_ISMARKED, item.isMarked() );
         values.put( MySQLiteHelper.COLUMN_ISDELETED, item.isDeleted() );
-        values.put( MySQLiteHelper.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
+        values.put( MySQLiteHelper.COLUMN_ITEM_TIMESTAMP, timestamp );
 
         return database.update( MySQLiteHelper.TABLE_ITEM, values, MySQLiteHelper.COLUMN_ITEM_ID + " =?",
                 new String[] { String.valueOf( item.getId() ) } );
@@ -150,7 +150,7 @@ public class ItemDataSource {
         return item;
     }
 
-    private long getCurrentTime() {
+    public long getCurrentTime() {
         return System.currentTimeMillis() / 1000;
     }
 
