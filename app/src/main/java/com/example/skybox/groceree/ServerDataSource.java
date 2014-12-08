@@ -180,12 +180,16 @@ public class ServerDataSource {
     }
 
     /*
+        This is where we actually consider the updates sent by the server, and update our Item list
+        where appropriate.
+
         Takes items from server (servItems) and compares them to items we currently have (itemsStored).
         For each item received:
             Check if item exists in 'itemsStored'
-                If true, replace with item received
-            If false
-                Insert in to db and 'itemsStored'
+                If false
+                    Insert in to db and 'itemsStored'
+                If true,
+                    replace with item received
     */
     private void updateItemList( List<Item> servItems ) {
         // If items were received

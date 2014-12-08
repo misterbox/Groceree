@@ -13,6 +13,7 @@ public class Item implements Comparable<Item> {
     private boolean isDeleted; // Column index 3
     private long timestamp; // Column index 4
 
+    // Implemented to support the 'indexOf()' method for an Item list
     @Override
     public boolean equals( Object o ) {
         if( ( o != null ) && ( o.getClass().equals( this.getClass() ) ) ) {
