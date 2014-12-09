@@ -77,6 +77,11 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
             tvItem.setPaintFlags(tvItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
         }
 
+        // Determine if Item 'isDeleted' and remove if necessary
+        if( item.isDeleted() ) {
+            super.remove( item );
+        }
+
         v.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 
         if( mSelectedItems.get( position ) ) {
