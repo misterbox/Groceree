@@ -77,20 +77,10 @@ public class ServerDataSource {
             mRequestQueue.add( jsonReq );
         } else {
             // POST request to '/syncItems' endpoint
-            List<Item> updatedItems = new ArrayList<Item>();
 
-            // Go through the items we have and select those that have been updated since 'lastCheckIn'
-            for( Iterator<Item> i = itemsStored.iterator(); i.hasNext(); ){
-                Item item = i.next();
+            // Get items that have been updated since our last check-in
+            List<Item> updatedItems = itemDataSource.getItemsSinceTimestamp( lastCheckIn );
 
-                // Add item to 'postItems' list if it has been updated since our last check-in
-                System.out.println( "item considered: " + item.toString() );
-                System.out.println( "item timestamp: " + item.getTimeStamp() );
-                if( item.getTimeStamp() > lastCheckIn ) {
-                    System.out.println( "Adding updated item: " + item.toString() );
-                    updatedItems.add( item );
-                }
-            }
             // Convert 'updatedItems' to JSON array
             JSONArray itemsAry = itemsToJSONAry( updatedItems );
             JSONObject postObj = new JSONObject();
@@ -109,7 +99,6 @@ public class ServerDataSource {
         }
     }
 
-    // TODO: I'm have to build each JSON object myself consisting of all data within each Item
     private JSONArray itemsToJSONAry( List<Item> itemsList ) {
         JSONArray itemsJSONAry = new JSONArray();
 
@@ -134,7 +123,7 @@ public class ServerDataSource {
     private class jsonRespListener implements Response.Listener<JSONObject> {
         @Override
         public void onResponse( JSONObject response ) {
-            Log.i(TAG, response.toString());
+            Log.i( TAG, response.toString() );
             List<Item> servItems = parseJSON( response );
 
             updateItemList( servItems );
@@ -205,13 +194,24 @@ public class ServerDataSource {
 
                     if( insertId == -1 ) {
                         Log.w( TAG, "Error inserting new Item in to database" );
-                    } else {
+                    } else if( !newItem.isDeleted() ) { // If 'newItem' is not 'isDeleted', add it to our list
+                        newItem.setId( insertId );
                         itemsStored.add( newItem );
                     }
-
                 } else {
-                    // Replace Item with newItem received
-                    itemsStored.set( index, newItem );
+                    //Else we update an existing Item with values from 'newItem'
+                    Item existingItem = itemsStored.get( index );
+                    long curTimeStamp = getCurTimestamp();
+
+                    existingItem.setMarked( newItem.isMarked() );
+                    existingItem.setDeleted( newItem.isDeleted() );
+                    existingItem.setTimeStamp( curTimeStamp );
+
+                    // Update db with our changes
+                    itemDataSource.updateItem( existingItem, curTimeStamp );
+
+                    // Finally, if 'existingItem' is now 'isDeleted', remove from our adapter
+                    itemsStored.remove( existingItem );
                 }
             }
 
@@ -230,7 +230,7 @@ public class ServerDataSource {
         return timestamp;
     }
 
-    private long getCurrentTime() {
+    private long getCurTimestamp() {
         return System.currentTimeMillis() / 1000;
     }
 
