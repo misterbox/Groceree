@@ -147,7 +147,7 @@ public class ServerDataSource {
             for( int i = 0; i < itemsAry.length(); i++ ) {
                 JSONObject item = itemsAry.getJSONObject( i );
                 Item newItem = new Item();
-                newItem.setItem( item.optString( "name" ) );
+                newItem.setItem( item.optString( "item" ) );
                 newItem.setMarked( item.optBoolean( "isMarked" ) );
                 newItem.setDeleted( item.optBoolean( "isDeleted" ) );
                 newItem.setTimeStamp( item.optLong( "timestamp" ) );
@@ -211,7 +211,9 @@ public class ServerDataSource {
                     itemDataSource.updateItem( existingItem, curTimeStamp );
 
                     // Finally, if 'existingItem' is now 'isDeleted', remove from our adapter
-                    itemsStored.remove( existingItem );
+                    if( existingItem.isDeleted() ) {
+                        itemsStored.remove(existingItem);
+                    }
                 }
             }
 

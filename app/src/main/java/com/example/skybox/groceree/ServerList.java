@@ -68,7 +68,7 @@ public class ServerList extends ListActivity {
             for( int i = 0; i < itemsAry.length(); i++ ) {
                 JSONObject item = itemsAry.getJSONObject( i );
                 Item newItem = new Item();
-                newItem.setItem( item.optString( "name" ) );
+                newItem.setItem( item.optString( "item" ) );
                 newItem.setMarked( item.optBoolean( "isMarked" ) );
                 newItem.setDeleted( item.optBoolean( "isDeleted" ) );
                 newItem.setTimeStamp( item.optLong( "timestamp", 0 ) );
