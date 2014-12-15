@@ -21,6 +21,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="com.example.skybox.groceree.contentprovider"
+            android:name="ItemContentProvider"/>
         <activity
             android:name="com.example.skybox.groceree.ShowDB"
             android:label="@string/title_activity_show_db"
