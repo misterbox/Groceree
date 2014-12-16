@@ -1,7 +1,11 @@
 package com.example.skybox.groceree;
 
 import android.app.ListActivity;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.graphics.Paint;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,21 +21,28 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import java.util.List;
 
-public class MainActivity extends ListActivity {
-    private ItemDataSource itemDataSource;
-    private ServerDataSource servDataSource;
+public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+    //private ItemDataSource itemDataSource;
+    //private ServerDataSource servDataSource;
 
-    @Override
+    private static final int ACTIVITY_CREATE = 0;
+    private static final int ACTIVITY_EDIT = 1;
+    private static final int DELETE_ID = Menu.FIRST + 1;
+    private SimpleCursorAdapter adapter;
+
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        super.onCreate( savedInstanceState );
+        setContentView( R.layout.activity_main );
 
         final ListView listView = getListView();
-
+        fillData();
+        registerForContextMenu( listView );
+/*
         EditText etEnterString = ( EditText ) findViewById( R.id.enter_string );
 
         // First get all items from database and populate our ListView
@@ -155,9 +166,11 @@ public class MainActivity extends ListActivity {
                 return handled;
             }
         });
+*/
     }
 
     public void insertItem() {
+/*
         SelectionAdapter adapter = ( SelectionAdapter ) getListAdapter();
 
         // Get item name from editText
@@ -172,10 +185,12 @@ public class MainActivity extends ListActivity {
         adapter.add( item );
         String message = String.format( "%s entered", item );
         Log.w(MySQLiteHelper.class.getName(), message);
+*/
     }
 
     // Set item as 'deleted' and therefore no longer needed on the list.
     public void markedItemDeleted( int itemID ) {
+/*
         SelectionAdapter adapter = ( SelectionAdapter ) getListAdapter();
         Item item = adapter.getItem( itemID );
 
@@ -186,6 +201,7 @@ public class MainActivity extends ListActivity {
         // Remove item from the adapter
         adapter.remove(item);
         adapter.notifyDataSetChanged();
+*/
     }
 
     @Override
@@ -217,7 +233,7 @@ public class MainActivity extends ListActivity {
                 break;
 
             case R.id.action_server_sync:
-                servDataSource.serverSync();
+                //servDataSource.serverSync();
                 break;
         }
 
@@ -229,5 +245,37 @@ public class MainActivity extends ListActivity {
         //itemDataSource.close();
 
         super.onStop();
+    }
+
+    private void fillData() {
+        // Fields from the db
+        String[] from = new String[] { ItemTable.COLUMN_ITEM };
+        // Fields on the UI to which we map
+        int[] to = new int[] { android.R.id.text1 };
+
+        getLoaderManager().initLoader( 0, null, this );
+        adapter = new SimpleCursorAdapter( this, R.layout.listview_row_item, null, from, to, 0 );
+
+        setListAdapter( adapter );
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader( int id, Bundle args ) {
+        String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM };
+        CursorLoader cursorLoader = new CursorLoader( this, ItemContentProvider.CONTENT_URI, projection,
+                null, null, null );
+
+        return cursorLoader;
+    }
+
+    @Override
+    public void onLoadFinished( Loader<Cursor> loader, Cursor data ) {
+        adapter.swapCursor( data );
+    }
+
+    @Override
+    public void onLoaderReset( Loader<Cursor> loader ) {
+        // data is not available anymore, delete reference
+        adapter.swapCursor( null );
     }
 }
