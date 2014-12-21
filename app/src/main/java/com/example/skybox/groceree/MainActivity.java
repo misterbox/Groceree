@@ -2,11 +2,13 @@ package com.example.skybox.groceree;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.SparseBooleanArray;
@@ -24,6 +26,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
+import java.net.URI;
 import java.util.List;
 
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
@@ -33,34 +36,34 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     private static final int ACTIVITY_CREATE = 0;
     private static final int ACTIVITY_EDIT = 1;
     private static final int DELETE_ID = Menu.FIRST + 1;
-    private SimpleCursorAdapter adapter;
+    private SelectionAdapter adapter;
 
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         setContentView( R.layout.activity_main );
 
         final ListView listView = getListView();
         fillData();
-        registerForContextMenu( listView );
-/*
+
         EditText etEnterString = ( EditText ) findViewById( R.id.enter_string );
 
         // First get all items from database and populate our ListView
-        itemDataSource = new ItemDataSource( this );
-        itemDataSource.open();
+        //itemDataSource = new ItemDataSource( this );
+        //itemDataSource.open();
 
-        final List<Item> items = itemDataSource.getAllActiveItems();
+        //final List<Item> items = itemDataSource.getAllActiveItems();
 
-        final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
+        //final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
 
-        setListAdapter( mAdapter );
+        //setListAdapter( mAdapter );
 
         // Establish our server check-ins
-        servDataSource = new ServerDataSource( this, items, mAdapter );
+        //servDataSource = new ServerDataSource( this, items, mAdapter );
 
+/*
         // Setup our MultiChoiceModeListener for the CAB
         listView.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE_MODAL );
-        listView.setMultiChoiceModeListener(new AbsListView.MultiChoiceModeListener() {
+        listView.setMultiChoiceModeListener( new AbsListView.MultiChoiceModeListener() {
             private int numRows = 0;
 
             @Override
@@ -151,6 +154,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
             }
         });
+*/
 
         // Set up listener for 'Done' input from the keyboard
         etEnterString.setOnEditorActionListener( new TextView.OnEditorActionListener() {
@@ -166,13 +170,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 return handled;
             }
         });
-*/
     }
 
     public void insertItem() {
-/*
-        SelectionAdapter adapter = ( SelectionAdapter ) getListAdapter();
-
         // Get item name from editText
         EditText editText = ( EditText ) findViewById( R.id.enter_string );
         String itemName = editText.getText().toString();
@@ -180,12 +180,13 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         // Clear editText
         editText.setText( "" );
 
-        // insert new item in to the database
-        Item item = itemDataSource.createItem( itemName );
-        adapter.add( item );
-        String message = String.format( "%s entered", item );
-        Log.w(MySQLiteHelper.class.getName(), message);
-*/
+        ContentValues values = new ContentValues();
+        values.put( ItemTable.COLUMN_ITEM, itemName );
+
+        Uri itemURI = getContentResolver().insert( ItemContentProvider.CONTENT_URI, values );
+
+        String message = String.format( "%s entered, uri: %s", itemName, itemURI );
+        Log.w( MySQLiteHelper.class.getName(), message );
     }
 
     // Set item as 'deleted' and therefore no longer needed on the list.
@@ -253,10 +254,10 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         // Fields on the UI to which we map
         int[] to = new int[] { android.R.id.text1 };
 
-        getLoaderManager().initLoader( 0, null, this );
-        adapter = new SimpleCursorAdapter( this, R.layout.listview_row_item, null, from, to, 0 );
+        getLoaderManager().initLoader(0, null, this);
+        adapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, null, from, to, 0 );
 
-        setListAdapter( adapter );
+        setListAdapter(adapter);
     }
 
     @Override
@@ -276,6 +277,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset( Loader<Cursor> loader ) {
         // data is not available anymore, delete reference
-        adapter.swapCursor( null );
+        adapter.swapCursor(null);
     }
 }

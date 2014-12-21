@@ -83,7 +83,7 @@ public class ItemContentProvider extends ContentProvider {
         int uriType = sURIMatcher.match( uri );
         SQLiteDatabase sqlDB = database.getWritableDatabase();
 
-        int rowsDeleted = 0;
+        values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
         long id = 0;
 
         switch( uriType ) {
@@ -171,4 +171,9 @@ public class ItemContentProvider extends ContentProvider {
             }
         }
     }
+
+    private long getCurrentTime() {
+        return System.currentTimeMillis() / 1000;
+    }
+
 }

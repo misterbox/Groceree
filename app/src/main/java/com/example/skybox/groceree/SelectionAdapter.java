@@ -1,11 +1,14 @@
 package com.example.skybox.groceree;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Paint;
 import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -14,20 +17,54 @@ import java.util.List;
 /**
  * Created by skybox on 11/15/14.
  */
-public class SelectionAdapter extends ArrayAdapter<Item> {
+public class SelectionAdapter extends SimpleCursorAdapter {
     private SparseBooleanArray mSelectedItems;
     private Context context;
+    private int layout;
     private List<Item> items;
 
-    public SelectionAdapter( Context context, int resource, List<Item> items ) {
-        super( context, resource, items );
+    public SelectionAdapter( Context context, int layout, Cursor cursor, String[] from, int[] to, int flags ) {
+        super( context, layout, cursor, from, to, flags );
         this.context = context;
-        this.items = items;
+        this.layout = layout;
         mSelectedItems = new SparseBooleanArray();
     }
 
+/*
+    @Override
+    public View newView( Context context, Cursor cursor, ViewGroup parent ) {
+        Cursor c = getCursor();
+
+        final LayoutInflater inflater = LayoutInflater.from( context );
+        View v = inflater.inflate( layout, parent, false );
+
+        int itemCol = c.getColumnIndex( ItemTable.COLUMN_ITEM );
+        String item = c.getString( itemCol );
+
+        TextView tvItem = ( TextView ) v.findViewById( android.R.id.text1 );
+
+        if( item != null ) {
+            tvItem.setText( item );
+        }
+
+        return v;
+    }
+
+    @Override
+    public void bindView( View v, Context context, Cursor cursor ) {
+        int itemCol = cursor.getColumnIndex( ItemTable.COLUMN_ITEM );
+        String item = cursor.getString( itemCol );
+
+        TextView tvItem = ( TextView ) v.findViewById( android.R.id.text1 );
+
+        if( item != null ) {
+            tvItem.setText( item );
+        }
+    }
+
+*/
     public void toggleSelection( int position ) {
-        setNewSelection( position, !mSelectedItems.get( position ) );
+        setNewSelection(position, !mSelectedItems.get(position));
     }
 
     public void setNewSelection( int position, boolean value ) {
@@ -53,17 +90,11 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
         notifyDataSetChanged();
     }
 
-    @Override
-    public void add( Item item ) {
-        super.add( item );
-
-        Collections.sort( items );
-    }
-
     public void sort() {
         Collections.sort( items );
     }
 
+/*
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
         Item item = items.get( position );
@@ -85,4 +116,5 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
 
         return v;
     }
+*/
 }
