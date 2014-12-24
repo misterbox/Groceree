@@ -112,7 +112,7 @@ public class ItemContentProvider extends ContentProvider {
             case ITEM_ID:
                 String id = uri.getLastPathSegment();
 
-                if(TextUtils.isEmpty( selection ) ) {
+                if( TextUtils.isEmpty( selection ) ) {
                     rowsDeleted = sqlDB.delete( ItemTable.TABLE_ITEM, ItemTable.COLUMN_ITEM_ID +
                         "=" + id, null );
                 } else {
