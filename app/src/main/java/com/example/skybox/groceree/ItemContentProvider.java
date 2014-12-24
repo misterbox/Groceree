@@ -84,7 +84,7 @@ public class ItemContentProvider extends ContentProvider {
         SQLiteDatabase sqlDB = database.getWritableDatabase();
 
         values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
-        long id = 0;
+        long id;
 
         switch( uriType ) {
             case ITEMS:
@@ -133,6 +133,9 @@ public class ItemContentProvider extends ContentProvider {
         int uriType = sURIMatcher.match( uri );
         SQLiteDatabase sqlDB = database.getWritableDatabase();
         int rowsUpdated = 0;
+
+        // Set timestamp of update
+        values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
 
         switch( uriType ) {
             case ITEMS:

@@ -23,7 +23,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import java.net.URI;
@@ -43,13 +42,11 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         setContentView( R.layout.activity_main );
 
         final ListView listView = getListView();
+
+        // Populate our 'listView'
         fillData();
 
         EditText etEnterString = ( EditText ) findViewById( R.id.enter_string );
-
-        // First get all items from database and populate our ListView
-        //itemDataSource = new ItemDataSource( this );
-        //itemDataSource.open();
 
         //final List<Item> items = itemDataSource.getAllActiveItems();
 
@@ -126,19 +123,17 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
             }
         });
 
-/*
         // onClick listener to stikethrough text and set 'isMarked' for the item in the database
         listView.setOnItemClickListener( new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick( AdapterView<?> adapterView, View view, int position, long l ) {
-                Item item = items.get( position );
                 boolean isMarked = false;
                 TextView tvItem = ( TextView ) view.findViewById( android.R.id.text1 );
 
                 // TODO: I could really extend TextView here to toggle the stikethrough more elegantly.
                 // If item is marked with a strikethrough, remove
                 if ( ( tvItem.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG ) > 0 ) {
-                    tvItem.setPaintFlags(tvItem.getPaintFlags() & ( ~Paint.STRIKE_THRU_TEXT_FLAG ) );
+                    tvItem.setPaintFlags( tvItem.getPaintFlags() & ( ~Paint.STRIKE_THRU_TEXT_FLAG ) );
 
                 // Else remove the strikethrough
                 } else {
@@ -148,13 +143,19 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 }
 
                 // Update our item in the database
-                item.setMarked( isMarked );
-                item.setTimeStamp( itemDataSource.getCurrentTime() );
-                itemDataSource.updateItem( item, itemDataSource.getCurrentTime() );
+                Cursor markedItem = ( Cursor ) adapter.getItem( position );
+                int itemId = markedItem.getInt( 0 );
+                Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
 
+                ContentValues values = new ContentValues();
+                values.put( ItemTable.COLUMN_ISMARKED, isMarked );
+                String itemName = markedItem.getString( 1 );
+                String message = String.format( "%s updated, isMarked: %b", itemName, isMarked );
+                Log.w( this.getClass().getName(), message );
+
+                getContentResolver().update( uri, values, null, null );
             }
         });
-*/
 
         // Set up listener for 'Done' input from the keyboard
         etEnterString.setOnEditorActionListener( new TextView.OnEditorActionListener() {
@@ -193,22 +194,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public void markedItemDeleted( int position ) {
         Cursor selectedItem = ( Cursor ) adapter.getItem( position );
 
-
         int itemId = selectedItem.getInt( 0 );
         Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
         getContentResolver().delete( uri, null, null );
-/*
-        SelectionAdapter adapter = ( SelectionAdapter ) getListAdapter();
-        Item item = adapter.getItem( itemID );
-
-        // Update item in the database
-        item.setDeleted( true );
-        itemDataSource.updateItem( item, itemDataSource.getCurrentTime() );
-
-        // Remove item from the adapter
-        adapter.remove(item);
-        adapter.notifyDataSetChanged();
-*/
     }
 
     @Override
@@ -268,7 +256,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader( int id, Bundle args ) {
-        String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM };
+        // Get all columns from all items in the database
+        String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
+            ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
         CursorLoader cursorLoader = new CursorLoader( this, ItemContentProvider.CONTENT_URI, projection,
                 null, null, null );
 
@@ -283,6 +273,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset( Loader<Cursor> loader ) {
         // data is not available anymore, delete reference
-        adapter.swapCursor(null);
+        adapter.swapCursor( null );
     }
 }
