@@ -83,6 +83,7 @@ public class ItemContentProvider extends ContentProvider {
         int uriType = sURIMatcher.match( uri );
         SQLiteDatabase sqlDB = database.getWritableDatabase();
 
+        // Mark the current timestamp for our insert
         values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
         long id;
 
@@ -103,7 +104,7 @@ public class ItemContentProvider extends ContentProvider {
     public int delete( Uri uri, String selection, String[] selectionArgs ) {
         int uriType = sURIMatcher.match( uri );
         SQLiteDatabase sqlDB = database.getWritableDatabase();
-        int rowsDeleted = 0;
+        int rowsDeleted;
 
         switch( uriType ) {
             case ITEMS:
@@ -132,7 +133,7 @@ public class ItemContentProvider extends ContentProvider {
     public int update( Uri uri, ContentValues values, String selection, String[] selectionArgs ) {
         int uriType = sURIMatcher.match( uri );
         SQLiteDatabase sqlDB = database.getWritableDatabase();
-        int rowsUpdated = 0;
+        int rowsUpdated;
 
         // Set timestamp of update
         values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );

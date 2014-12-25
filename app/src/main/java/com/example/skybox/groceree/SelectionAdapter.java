@@ -7,13 +7,8 @@ import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by skybox on 11/15/14.
@@ -22,7 +17,6 @@ public class SelectionAdapter extends SimpleCursorAdapter {
     private SparseBooleanArray mSelectedItems;
     private Context context;
     private int layout;
-    private List<Item> items;
 
     public SelectionAdapter( Context context, int layout, Cursor cursor, String[] from, int[] to, int flags ) {
         super( context, layout, cursor, from, to, flags );
@@ -49,6 +43,7 @@ public class SelectionAdapter extends SimpleCursorAdapter {
             // Determine if Item 'isMarked' to set strikethrough
             int isMarkedCol = c.getColumnIndex( ItemTable.COLUMN_ISMARKED );
             int isMarkedInt = c.getInt( isMarkedCol );
+
             boolean isMarked = false;
             if( isMarkedInt != 0 ) {
                 isMarked = true;
@@ -76,6 +71,7 @@ public class SelectionAdapter extends SimpleCursorAdapter {
             // Determine if Item 'isMarked' to set strikethrough
             int isMarkedCol = cursor.getColumnIndex( ItemTable.COLUMN_ISMARKED );
             int isMarkedInt = cursor.getInt( isMarkedCol );
+
             boolean isMarked = false;
             if( isMarkedInt != 0 ) {
                 isMarked = true;
@@ -102,8 +98,6 @@ public class SelectionAdapter extends SimpleCursorAdapter {
         }
 
         View v = super.getView( position, convertView, parent ); // Let the adapter handle setting up the row views
-        TextView tvItem = ( TextView ) v.findViewById( android.R.id.text1 );
-
         v.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 
         if( mSelectedItems.get( position ) ) {
@@ -114,7 +108,7 @@ public class SelectionAdapter extends SimpleCursorAdapter {
     }
 
     public void toggleSelection( int position ) {
-        setNewSelection(position, !mSelectedItems.get(position));
+        setNewSelection( position, !mSelectedItems.get( position ) );
     }
 
     public void setNewSelection( int position, boolean value ) {

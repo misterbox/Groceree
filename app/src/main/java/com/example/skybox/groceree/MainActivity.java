@@ -25,16 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.net.URI;
-import java.util.List;
-
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
-    //private ItemDataSource itemDataSource;
-    //private ServerDataSource servDataSource;
-
-    private static final int ACTIVITY_CREATE = 0;
-    private static final int ACTIVITY_EDIT = 1;
-    private static final int DELETE_ID = Menu.FIRST + 1;
     private SelectionAdapter adapter;
 
     protected void onCreate( Bundle savedInstanceState ) {
@@ -134,7 +125,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 // If item is marked with a strikethrough, remove
                 if ( ( tvItem.getPaintFlags() & Paint.STRIKE_THRU_TEXT_FLAG ) > 0 ) {
                     tvItem.setPaintFlags( tvItem.getPaintFlags() & ( ~Paint.STRIKE_THRU_TEXT_FLAG ) );
-
                 // Else remove the strikethrough
                 } else {
                     tvItem.setPaintFlags( tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
@@ -187,7 +177,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         Uri itemURI = getContentResolver().insert( ItemContentProvider.CONTENT_URI, values );
 
         String message = String.format( "%s entered, uri: %s", itemName, itemURI );
-        Log.w( MySQLiteHelper.class.getName(), message );
+        Log.w( this.getClass().getName(), message );
     }
 
     // Set item as 'deleted' and therefore no longer needed on the list.
@@ -202,7 +192,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         // Inflate the CAB_menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate( R.menu.menu_main, menu );
         return true;
     }
 
@@ -224,7 +214,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
             case R.id.action_server_list:
                 intent = new Intent( this, ServerList.class );
-                startActivity(intent);
+                startActivity( intent );
                 break;
 
             case R.id.action_server_sync:
@@ -237,8 +227,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
     @Override
     public void onStop() {
-        //itemDataSource.close();
-
         super.onStop();
     }
 
@@ -251,7 +239,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         getLoaderManager().initLoader( 0, null, this );
         adapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, null, from, to, 0 );
 
-        setListAdapter(adapter);
+        setListAdapter( adapter );
     }
 
     @Override
