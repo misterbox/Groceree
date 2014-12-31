@@ -39,15 +39,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
         EditText etEnterString = ( EditText ) findViewById( R.id.enter_string );
 
-        //final List<Item> items = itemDataSource.getAllActiveItems();
-
-        //final SelectionAdapter mAdapter = new SelectionAdapter( this, android.R.layout.simple_list_item_1, items );
-
-        //setListAdapter( mAdapter );
-
-        // Establish our server check-ins
-        //servDataSource = new ServerDataSource( this, items, mAdapter );
-
         // Setup our MultiChoiceModeListener for the CAB
         listView.setChoiceMode( ListView.CHOICE_MODE_MULTIPLE_MODAL );
         listView.setMultiChoiceModeListener( new AbsListView.MultiChoiceModeListener() {
