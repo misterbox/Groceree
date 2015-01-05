@@ -2,7 +2,7 @@
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
     android:contentAuthority="com.example.skybox.groceree.contentprovider"
     android:accountType="theskyegriffin.com"
-    android:userVisible="true"
+    android:userVisible="false"
     android:allowParallelSyncs="false"
-    android:isAlwaysSyncable="false"
+    android:isAlwaysSyncable="true"
     android:supportsUploading="true"/>

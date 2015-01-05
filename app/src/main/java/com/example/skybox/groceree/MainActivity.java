@@ -1,15 +1,19 @@
 package com.example.skybox.groceree;
 
+import android.accounts.Account;
 import android.app.ListActivity;
 import android.app.LoaderManager;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
+import android.database.ContentObserver;
 import android.database.Cursor;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.ActionMode;
@@ -28,9 +32,27 @@ import android.widget.TextView;
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private SelectionAdapter adapter;
 
+    public static final String SCHEME = "content://";
+    public static final String AUTHORITY = "com.example.skybox.groceree.contentprovider";
+    public static final String TABLE_PATH = "items";
+    public static final Account ACCOUNT = new Account( "default_account", "theskyegriffin.com" );
+    Uri uri;
+    ContentResolver resolver;
+
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_main );
+
+        resolver = getContentResolver();
+        uri = new Uri.Builder()
+                .scheme( SCHEME )
+                .authority( AUTHORITY )
+                .path( TABLE_PATH )
+                .build();
+
+        ItemObserver observer = new ItemObserver( null );
+        resolver.registerContentObserver( uri, true, observer );
+
+        setContentView(R.layout.activity_main);
 
         final ListView listView = getListView();
 
@@ -253,5 +275,22 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public void onLoaderReset( Loader<Cursor> loader ) {
         // data is not available anymore, delete reference
         adapter.swapCursor( null );
+    }
+
+    public class ItemObserver extends ContentObserver {
+        public ItemObserver( Handler handler ) {
+            super( handler );
+        }
+
+        @Override
+        public void onChange( boolean selfChange ) {
+            onChange( selfChange, null );
+        }
+
+        @Override
+        public void onChange( boolean selfChange, Uri changeUri ) {
+            System.out.println( "ContentObserver: onChange" );
+            ContentResolver.requestSync( ACCOUNT, AUTHORITY, new Bundle() );
+        }
     }
 }

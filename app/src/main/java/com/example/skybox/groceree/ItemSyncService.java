@@ -14,9 +14,11 @@ public class ItemSyncService extends Service {
 
     @Override
     public void onCreate() {
+        super.onCreate();
         synchronized ( syncAdapterLock ) {
             if( syncAdapter == null )
-                syncAdapter = new ItemSyncAdapter( getApplicationContext(), true );
+                System.out.println( "SyncService: onCreate()" );
+            syncAdapter = new ItemSyncAdapter( getApplicationContext(), true );
         }
     }
 

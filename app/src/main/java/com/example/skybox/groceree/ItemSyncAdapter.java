@@ -20,6 +20,7 @@ public class ItemSyncAdapter extends AbstractThreadedSyncAdapter {
 
     public ItemSyncAdapter( Context context, boolean autoInitialize ) {
         super( context, autoInitialize );
+        System.out.println( "SyncAdapter: constructor" );
         accountManager = AccountManager.get( context );
     }
 

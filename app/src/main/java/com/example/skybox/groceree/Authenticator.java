@@ -13,6 +13,7 @@ import android.os.Bundle;
 public class Authenticator extends AbstractAccountAuthenticator {
     public Authenticator( Context context ) {
         super( context );
+        System.out.println( "Authenticator: Constructor()" );
     }
 
     @Override
