@@ -267,7 +267,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
             ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
         CursorLoader cursorLoader = new CursorLoader( this, ItemContentProvider.CONTENT_URI, projection,
-                null, null, null );
+                "isDeleted=?", new String[] { "0" }, null );
 
         return cursorLoader;
     }
