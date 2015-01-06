@@ -16,12 +16,9 @@ import java.util.List;
  * Created by skybox on 12/30/14.
  */
 public class ItemSyncAdapter extends AbstractThreadedSyncAdapter {
-    private final AccountManager accountManager;
-
     public ItemSyncAdapter( Context context, boolean autoInitialize ) {
         super( context, autoInitialize );
         System.out.println( "SyncAdapter: constructor" );
-        accountManager = AccountManager.get( context );
     }
 
     @Override

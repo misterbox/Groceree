@@ -35,13 +35,18 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public static final String SCHEME = "content://";
     public static final String AUTHORITY = "com.example.skybox.groceree.contentprovider";
     public static final String TABLE_PATH = "items";
-    public static final Account ACCOUNT = new Account( "default_account", "theskyegriffin.com" );
+    public static final Account ACCOUNT = AuthenticatorService.GetAccount( "theskyegriffin.com" );
     Uri uri;
     ContentResolver resolver;
 
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
+        // Create account, if needed
+        // Sets up and registers our syncAdapter
+        SyncUtils.CreateSyncAccount( this );
+
+        // Get a handle on our content resolver, and configure the URI to point to our content provider
         resolver = getContentResolver();
         uri = new Uri.Builder()
                 .scheme( SCHEME )
@@ -49,10 +54,11 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 .path( TABLE_PATH )
                 .build();
 
+        // Setup our content observer to watch for changes in data
         ItemObserver observer = new ItemObserver( null );
         resolver.registerContentObserver( uri, true, observer );
 
-        setContentView(R.layout.activity_main);
+        setContentView( R.layout.activity_main );
 
         final ListView listView = getListView();
 
@@ -290,7 +296,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         @Override
         public void onChange( boolean selfChange, Uri changeUri ) {
             System.out.println( "ContentObserver: onChange" );
-            ContentResolver.requestSync( ACCOUNT, AUTHORITY, new Bundle() );
+            SyncUtils.TriggerRefresh();
         }
     }
 }

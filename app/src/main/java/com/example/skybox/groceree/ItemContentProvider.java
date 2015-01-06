@@ -23,7 +23,7 @@ public class ItemContentProvider extends ContentProvider {
     private static final int ITEMS = 10;
     private static final int ITEM_ID = 20;
 
-    private static final String AUTHORITY = "com.example.skybox.groceree.contentprovider";
+    public static final String AUTHORITY = "com.example.skybox.groceree.contentprovider";
 
     private static final String BASE_PATH = "items";
     public static final Uri CONTENT_URI = Uri.parse( "content://" + AUTHORITY + "/" + BASE_PATH );
