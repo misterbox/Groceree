@@ -271,10 +271,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         // Get all columns from all items in the database with the 'isDeleted' column set to 0 (false)
         String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
             ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
-        CursorLoader cursorLoader = new CursorLoader( this, ItemContentProvider.CONTENT_URI, projection,
-                "isDeleted=?", new String[] { "0" }, ItemTable.COLUMN_ITEM + " ASC" );
 
-        return cursorLoader;
+        return new CursorLoader( this, ItemContentProvider.CONTENT_URI, projection,
+                "isDeleted=?", new String[] { "0" }, ItemTable.COLUMN_ITEM + " ASC" );
     }
 
     @Override

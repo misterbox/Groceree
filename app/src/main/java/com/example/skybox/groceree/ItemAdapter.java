@@ -31,7 +31,6 @@ public class ItemAdapter extends ArrayAdapter<Item> {
             convertView = LayoutInflater.from(context).inflate( R.layout.listview_row_item, parent, false );
         }
 
-
         convertView.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 
         TextView tvId = ( TextView ) convertView.findViewById( R.id.textViewID );

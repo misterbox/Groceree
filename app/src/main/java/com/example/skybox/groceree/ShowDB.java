@@ -25,7 +25,6 @@ public class ShowDB extends ListActivity {
         setListAdapter( itemAdapter );
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the CAB_menu; this adds items to the action bar if it is present.
