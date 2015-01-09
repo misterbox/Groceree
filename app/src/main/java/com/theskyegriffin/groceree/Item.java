@@ -1,4 +1,4 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;

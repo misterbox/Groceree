@@ -1,4 +1,4 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
 import android.app.Service;
 import android.content.Intent;

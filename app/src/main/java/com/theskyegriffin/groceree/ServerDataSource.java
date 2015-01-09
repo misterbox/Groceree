@@ -1,7 +1,6 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
 import android.content.ContentProviderClient;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;

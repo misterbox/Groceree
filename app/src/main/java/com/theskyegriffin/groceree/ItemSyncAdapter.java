@@ -1,4 +1,4 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
 import android.accounts.Account;
 import android.content.AbstractThreadedSyncAdapter;
@@ -6,10 +6,6 @@ import android.content.ContentProviderClient;
 import android.content.Context;
 import android.content.SyncResult;
 import android.os.Bundle;
-
-import com.example.skybox.groceree.ServerDataSource;
-
-import java.util.List;
 
 /**
  * Created by skybox on 12/30/14.

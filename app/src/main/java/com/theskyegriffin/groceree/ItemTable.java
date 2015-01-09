@@ -1,4 +1,4 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;

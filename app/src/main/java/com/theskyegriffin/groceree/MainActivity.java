@@ -1,4 +1,4 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
 import android.app.ListActivity;
 import android.app.LoaderManager;
@@ -32,7 +32,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     private SelectionAdapter adapter;
 
     public static final String SCHEME = "content://";
-    public static final String AUTHORITY = "com.example.skybox.groceree.contentprovider";
+    public static final String AUTHORITY = "com.theskyegriffin.groceree.contentprovider";
     public static final String TABLE_PATH = "items";
     Uri uri;
     ContentResolver resolver;
@@ -190,15 +190,15 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public void toggleItemIsMarked( int position, boolean isMarked ) {
         Cursor markedItem = ( Cursor ) adapter.getItem( position );
         int itemId = markedItem.getInt( 0 );
-        Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
+        Uri uri = Uri.parse(ItemContentProvider.CONTENT_URI + "/" + itemId);
 
         ContentValues values = new ContentValues();
-        values.put( ItemTable.COLUMN_ISMARKED, isMarked );
+        values.put(ItemTable.COLUMN_ISMARKED, isMarked);
         String itemName = markedItem.getString( 1 );
         String message = String.format( "%s updated, isMarked: %b", itemName, isMarked );
         Log.w( this.getClass().getName(), message );
 
-        getContentResolver().update( uri, values, null, null );
+        getContentResolver().update(uri, values, null, null);
     }
 
     // Set item as 'deleted' and therefore no longer needed on the list.
@@ -210,7 +210,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         ContentValues values = new ContentValues();
         values.put( ItemTable.COLUMN_ISDELETED, true );
 
-        getContentResolver().update( uri, values, null, null );
+        getContentResolver().update(uri, values, null, null);
     }
 
     @Override

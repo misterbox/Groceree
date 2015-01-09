@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
-    android:contentAuthority="com.example.skybox.groceree.contentprovider"
+    android:contentAuthority="com.theskyegriffin.groceree.contentprovider"
     android:accountType="theskyegriffin.com"
     android:userVisible="false"
     android:allowParallelSyncs="false"

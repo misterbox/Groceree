@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.skybox.groceree" >
+    package="com.theskyegriffin.groceree" >
 
     <uses-sdk android:maxSdkVersion="19" />
 
@@ -17,7 +17,7 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name="com.example.skybox.groceree.MainActivity"
+            android:name="com.theskyegriffin.groceree.MainActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -26,27 +26,27 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.example.skybox.groceree.ShowDB"
+            android:name="com.theskyegriffin.groceree.ShowDB"
             android:label="@string/title_activity_show_db"
-            android:parentActivityName="com.example.skybox.groceree.MainActivity" >
+            android:parentActivityName="com.theskyegriffin.groceree.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.skybox.groceree.MainActivity" />
+                android:value="com.theskyegriffin.groceree.MainActivity" />
         </activity>
         <activity
-            android:name="com.example.skybox.groceree.ServerList"
+            android:name="com.theskyegriffin.groceree.ServerList"
             android:label="@string/title_activity_server_list"
-            android:parentActivityName="com.example.skybox.groceree.MainActivity" >
+            android:parentActivityName="com.theskyegriffin.groceree.MainActivity" >
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.example.skybox.groceree.MainActivity" />
+                android:value="com.theskyegriffin.groceree.MainActivity" />
         </activity>
         <provider
-            android:authorities="com.example.skybox.groceree.contentprovider"
-            android:name="ItemContentProvider"
+            android:authorities="com.theskyegriffin.groceree.contentprovider"
+            android:name="com.theskyegriffin.groceree.ItemContentProvider"
             android:exported="false"
             android:syncable="true" />
-        <service android:name=".AuthenticatorService"
+        <service android:name="com.theskyegriffin.groceree.AuthenticatorService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator"/>
@@ -55,7 +55,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator"/>
         </service>
-        <service android:name=".ItemSyncService"
+        <service android:name="com.theskyegriffin.groceree.ItemSyncService"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
