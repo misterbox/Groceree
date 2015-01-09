@@ -1,6 +1,5 @@
 package com.example.skybox.groceree;
 
-import android.accounts.Account;
 import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
@@ -35,7 +34,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public static final String SCHEME = "content://";
     public static final String AUTHORITY = "com.example.skybox.groceree.contentprovider";
     public static final String TABLE_PATH = "items";
-    public static final Account ACCOUNT = AuthenticatorService.GetAccount( "theskyegriffin.com" );
     Uri uri;
     ContentResolver resolver;
 
@@ -244,7 +242,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 break;
 
             case R.id.action_server_sync:
-                //servDataSource.serverSync();
+                SyncUtils.TriggerRefresh();
                 break;
         }
 
@@ -274,7 +272,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
             ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
         CursorLoader cursorLoader = new CursorLoader( this, ItemContentProvider.CONTENT_URI, projection,
-                "isDeleted=?", new String[] { "0" }, null );
+                "isDeleted=?", new String[] { "0" }, ItemTable.COLUMN_ITEM + " ASC" );
 
         return cursorLoader;
     }
