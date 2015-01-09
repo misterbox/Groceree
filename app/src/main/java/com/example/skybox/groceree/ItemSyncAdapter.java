@@ -1,7 +1,6 @@
 package com.example.skybox.groceree;
 
 import android.accounts.Account;
-import android.accounts.AccountManager;
 import android.content.AbstractThreadedSyncAdapter;
 import android.content.ContentProviderClient;
 import android.content.Context;
@@ -16,19 +15,19 @@ import java.util.List;
  * Created by skybox on 12/30/14.
  */
 public class ItemSyncAdapter extends AbstractThreadedSyncAdapter {
+    ServerDataSource dataSource;
+
     public ItemSyncAdapter( Context context, boolean autoInitialize ) {
-        super( context, autoInitialize );
-        System.out.println( "SyncAdapter: constructor" );
+        super(context, autoInitialize);
+
+        dataSource = new ServerDataSource( context );
     }
 
     @Override
     public void onPerformSync( Account account, Bundle extras, String authority, ContentProviderClient providerClient,
                                SyncResult syncResult ) {
         try {
-            // TODO: Modify ServerDataSource to work here
-            //ServerDataSource dataSource = new ServerDataSource();
-            // Use provider to get a list of items that have changed since our last check-in
-            System.out.println( "In onPerformSync" );
+            dataSource.serverSync( providerClient );
         } catch ( Exception e ) {
             e.printStackTrace();
         }

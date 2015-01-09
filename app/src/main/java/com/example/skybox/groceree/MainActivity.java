@@ -62,7 +62,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
         final ListView listView = getListView();
 
-        // Populate our 'listView'
+        // Populate our 'listView' from our loader
         fillData();
 
         EditText etEnterString = ( EditText ) findViewById( R.id.enter_string );
@@ -152,17 +152,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 }
 
                 // Update our item in the database
-                Cursor markedItem = ( Cursor ) adapter.getItem( position );
-                int itemId = markedItem.getInt( 0 );
-                Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
-
-                ContentValues values = new ContentValues();
-                values.put( ItemTable.COLUMN_ISMARKED, isMarked );
-                String itemName = markedItem.getString( 1 );
-                String message = String.format( "%s updated, isMarked: %b", itemName, isMarked );
-                Log.w( this.getClass().getName(), message );
-
-                getContentResolver().update( uri, values, null, null );
+                toggleItemIsMarked(position, isMarked);
             }
         });
 
@@ -199,13 +189,30 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         Log.w( this.getClass().getName(), message );
     }
 
+    public void toggleItemIsMarked( int position, boolean isMarked ) {
+        Cursor markedItem = ( Cursor ) adapter.getItem( position );
+        int itemId = markedItem.getInt( 0 );
+        Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
+
+        ContentValues values = new ContentValues();
+        values.put( ItemTable.COLUMN_ISMARKED, isMarked );
+        String itemName = markedItem.getString( 1 );
+        String message = String.format( "%s updated, isMarked: %b", itemName, isMarked );
+        Log.w( this.getClass().getName(), message );
+
+        getContentResolver().update( uri, values, null, null );
+    }
+
     // Set item as 'deleted' and therefore no longer needed on the list.
     public void markedItemDeleted( int position ) {
         Cursor selectedItem = ( Cursor ) adapter.getItem( position );
-
         int itemId = selectedItem.getInt( 0 );
         Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
-        getContentResolver().delete( uri, null, null );
+
+        ContentValues values = new ContentValues();
+        values.put( ItemTable.COLUMN_ISDELETED, true );
+
+        getContentResolver().update( uri, values, null, null );
     }
 
     @Override
@@ -263,7 +270,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader( int id, Bundle args ) {
-        // Get all columns from all items in the database
+        // Get all columns from all items in the database with the 'isDeleted' column set to 0 (false)
         String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
             ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
         CursorLoader cursorLoader = new CursorLoader( this, ItemContentProvider.CONTENT_URI, projection,
@@ -295,7 +302,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
         @Override
         public void onChange( boolean selfChange, Uri changeUri ) {
-            System.out.println( "ContentObserver: onChange" );
             SyncUtils.TriggerRefresh();
         }
     }
