@@ -1,4 +1,4 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
 import android.app.ListActivity;
 import android.os.Bundle;
@@ -24,7 +24,6 @@ public class ShowDB extends ListActivity {
 
         setListAdapter( itemAdapter );
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

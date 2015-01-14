@@ -1,7 +1,12 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
+import android.content.ContentProviderClient;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.net.Uri;
+import android.os.RemoteException;
 import android.util.Log;
 
 import com.android.volley.Request;
@@ -28,7 +33,6 @@ import java.util.List;
  */
 public class ServerDataSource {
     private String TAG = this.getClass().getSimpleName();
-    private SelectionAdapter adapter;
     private long lastCheckIn;
     private RequestQueue mRequestQueue;
 
@@ -44,12 +48,9 @@ public class ServerDataSource {
     private SharedPreferences.Editor prefEditor;
     private String TIMESTAMP_PREF = "last_checkin_timestamp";
 
-    private ItemDataSource itemDataSource;
+    private ContentProviderClient providerClient;
 
-    public ServerDataSource( Context context, List<Item> items, SelectionAdapter adapter ) {
-        this.adapter = adapter;
-        this.itemsStored = items;
-
+    public ServerDataSource( Context context ) {
         sharedPref = context.getSharedPreferences( TAG, Context.MODE_PRIVATE );
         prefEditor = sharedPref.edit();
 
@@ -57,12 +58,12 @@ public class ServerDataSource {
         mRequestQueue = Volley.newRequestQueue( context );
 
         itemsReceived = new ArrayList<Item>();
-        itemDataSource = new ItemDataSource( context );
-        itemDataSource.open();
     }
 
     // TODO: Should we use a ConnectionMananger here to determine if the network is available?
-    public void serverSync() {
+    public void serverSync( ContentProviderClient client ) {
+        providerClient = client;
+
         System.out.println( "last check-in: " + lastCheckIn );
 
         // Clear all items received before fetching a new list
@@ -75,27 +76,28 @@ public class ServerDataSource {
             JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.GET, serverURL + listEndPoint, null, new jsonRespListener(), new jsonRespErrListener() );
 
             mRequestQueue.add( jsonReq );
-        } else {
-            // POST request to '/syncItems' endpoint
+        } else { // POST request to '/syncItems' endpoint
 
             // Get items that have been updated since our last check-in
-            List<Item> updatedItems = itemDataSource.getItemsSinceTimestamp( lastCheckIn );
+            List<Item> updatedItems = getItemsSinceTimestamp( lastCheckIn );
 
-            // Convert 'updatedItems' to JSON array
-            JSONArray itemsAry = itemsToJSONAry( updatedItems );
-            JSONObject postObj = new JSONObject();
+            if( updatedItems != null ) {
+                // Convert 'updatedItems' to JSON array
+                JSONArray itemsAry = itemsToJSONAry( updatedItems );
+                JSONObject postObj = new JSONObject();
 
-            // Build our JSON object to post
-            try {
-                postObj.put( "timestamp", lastCheckIn );
-                postObj.put( "items", itemsAry );
-            } catch( Exception e ) {
-                e.printStackTrace();
+                // Build our JSON object to post
+                try {
+                    postObj.put( "timestamp", lastCheckIn );
+                    postObj.put( "items", itemsAry );
+                } catch( Exception e ) {
+                    e.printStackTrace();
+                }
+
+                JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.POST, serverURL + syncEndPoint, postObj, new jsonRespListener(), new jsonRespErrListener() );
+
+                mRequestQueue.add( jsonReq );
             }
-
-            JsonObjectRequest jsonReq = new JsonObjectRequest( Request.Method.POST, serverURL + syncEndPoint, postObj, new jsonRespListener(), new jsonRespErrListener() );
-
-            mRequestQueue.add( jsonReq );
         }
     }
 
@@ -183,41 +185,56 @@ public class ServerDataSource {
     private void updateItemList( List<Item> servItems ) {
         // If items were received
         if( !servItems.isEmpty() ) {
+
+            // Get a list of all the Items we know about
+            itemsStored = getAllItems();
+
+            // Iterate over the Items sent by the server
             for( Iterator<Item> i = servItems.iterator(); i.hasNext(); ) {
                 Item newItem = i.next();
 
                 int index = itemsStored.indexOf( newItem );
                 // If Item is not found in 'itemsStored'
                 if( index == -1 ){
-                    // Attempt to insert newItem in to db.
-                    long insertId = itemDataSource.insertItem( newItem );
+                    // Add Item to the db and 'itemsStored'
+                    ContentValues values = new ContentValues();
+                    values.put( ItemTable.COLUMN_ITEM, newItem.getItem() );
+                    values.put( ItemTable.COLUMN_ISMARKED, newItem.isMarked() );
+                    values.put( ItemTable.COLUMN_ISDELETED, newItem.isDeleted() );
+                    values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, newItem.getTimeStamp() );
 
-                    if( insertId == -1 ) {
-                        Log.w( TAG, "Error inserting new Item in to database" );
-                    } else if( !newItem.isDeleted() ) { // If 'newItem' is not 'isDeleted', add it to our list
-                        newItem.setId( insertId );
-                        itemsStored.add( newItem );
+                    try {
+                        providerClient.insert( ItemContentProvider.CONTENT_URI, values );
+                    } catch ( RemoteException e ) {
+                        e.printStackTrace();
                     }
+
+                    itemsStored.add( newItem );
                 } else {
                     //Else we update an existing Item with values from 'newItem'
                     Item existingItem = itemsStored.get( index );
-                    long curTimeStamp = getCurTimestamp();
 
+                    // Update 'existingItem' with values from 'newItem'
                     existingItem.setMarked( newItem.isMarked() );
                     existingItem.setDeleted( newItem.isDeleted() );
-                    existingItem.setTimeStamp( curTimeStamp );
+                    existingItem.setTimeStamp( newItem.getTimeStamp() );
 
                     // Update db with our changes
-                    itemDataSource.updateItem( existingItem, curTimeStamp );
+                    ContentValues values = new ContentValues();
+                    values.put( ItemTable.COLUMN_ISMARKED, newItem.isMarked() );
+                    values.put( ItemTable.COLUMN_ISDELETED, newItem.isDeleted() );
+                    values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, newItem.getTimeStamp() );
+                    long itemId = existingItem.getId();
 
-                    // Finally, if 'existingItem' is now 'isDeleted', remove from our adapter
-                    if( existingItem.isDeleted() ) {
-                        itemsStored.remove(existingItem);
+                    Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
+
+                    try {
+                        providerClient.update( uri, values, null, null );
+                    } catch ( RemoteException e ) {
+                        e.printStackTrace();
                     }
                 }
             }
-
-            adapter.notifyDataSetChanged();
         }
     }
 
@@ -234,6 +251,70 @@ public class ServerDataSource {
 
     private long getCurTimestamp() {
         return System.currentTimeMillis() / 1000;
+    }
+
+    private List<Item> getAllItems() {
+        // Makes use of 'getItemsSinceTimestamp' by querying for all Items since the beginning of time
+        return getItemsSinceTimestamp( 0 );
+    }
+
+    private List<Item> getItemsSinceTimestamp( long timestamp ) {
+        String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
+                ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
+
+        try {
+            Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, projection, ItemTable.COLUMN_ITEM_TIMESTAMP
+                    + ">?", new String[] { String.valueOf( timestamp ) }, null );
+
+            return cursorToList( results );
+        } catch ( RemoteException e ) {
+            e.printStackTrace();
+        }
+
+        // By default, return an empty list
+        return null;
+    }
+
+    // Convert a cursor of Items in to an ArrayList
+    private List<Item> cursorToList( Cursor cursor ) {
+        List<Item> items = new ArrayList<Item>();
+
+        cursor.moveToFirst();
+
+        while( !cursor.isAfterLast() ) {
+            Item item = cursorToItem( cursor );
+            items.add( item );
+            cursor.moveToNext();
+        }
+
+        cursor.close();
+
+        return items;
+    }
+
+    // Convert an individual Cursor row in to an Item
+    private Item cursorToItem( Cursor cursor ){
+        Item item = new Item();
+        item.setId( cursor.getLong( 0 ) );
+        item.setItem( cursor.getString( 1 ) );
+
+        int isMarkedInt = cursor.getInt( 2 );
+        if( isMarkedInt != 0 ) {
+            item.setMarked( true );
+        } else {
+            item.setMarked( false );
+        }
+
+        int isDeletedInt = cursor.getInt( 3 );
+        if( isDeletedInt != 0 ) {
+            item.setDeleted( true );
+        } else {
+            item.setDeleted( false );
+        }
+
+        item.setTimeStamp( cursor.getInt( 4 ) );
+
+        return item;
     }
 
 }

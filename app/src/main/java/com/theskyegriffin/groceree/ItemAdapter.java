@@ -1,4 +1,4 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -30,7 +30,6 @@ public class ItemAdapter extends ArrayAdapter<Item> {
         if( convertView == null ) {
             convertView = LayoutInflater.from(context).inflate( R.layout.listview_row_item, parent, false );
         }
-
 
         convertView.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 

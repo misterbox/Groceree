@@ -1,15 +1,12 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.groceree;
 
-import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 /**
- * Created by skybox on 11/11/14.
+ * Created by skybox on 12/14/14.
  */
-public class MySQLiteHelper extends SQLiteOpenHelper {
-    // Item table
+public class ItemTable {
     public static final String TABLE_ITEM = "item";
     public static final String COLUMN_ITEM_ID = "_id";
     public static final String COLUMN_ITEM = "item";
@@ -28,18 +25,14 @@ public class MySQLiteHelper extends SQLiteOpenHelper {
             + COLUMN_ISMARKED + " boolean not null default 0, " // default is false
             + COLUMN_ITEM_TIMESTAMP  + " datetime default current_timestamp);";
 
-   public MySQLiteHelper( Context context ) {
-        super( context, DATABASE_NAME, null, DATABASE_VERSION );
-    }
-
-    public void onCreate( SQLiteDatabase database ) {
+    public static void onCreate( SQLiteDatabase database ) {
         database.execSQL( ITEM_TABLE_CREATE );
     }
 
-    public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
-        Log.w( MySQLiteHelper.class.getName(),
+    public static void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
+        Log.w(MySQLiteHelper.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
-                + newVersion );
+                        + newVersion);
         db.execSQL( "DROP TABLE IF EXISTS " + TABLE_ITEM );
         onCreate( db );
     }

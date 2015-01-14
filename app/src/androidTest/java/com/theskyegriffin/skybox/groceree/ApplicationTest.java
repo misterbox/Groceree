@@ -1,4 +1,4 @@
-package com.example.skybox.groceree;
+package com.theskyegriffin.skybox.groceree;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
