@@ -213,18 +213,17 @@ public class ServerDataSource {
                 } else {
                     //Else we update an existing Item with values from 'newItem'
                     Item existingItem = itemsStored.get( index );
-                    long curTimeStamp = getCurTimestamp();
 
                     // Update 'existingItem' with values from 'newItem'
-                    existingItem.setMarked(newItem.isMarked());
-                    existingItem.setDeleted(newItem.isDeleted());
-                    existingItem.setTimeStamp( curTimeStamp );
+                    existingItem.setMarked( newItem.isMarked() );
+                    existingItem.setDeleted( newItem.isDeleted() );
+                    existingItem.setTimeStamp( newItem.getTimeStamp() );
 
                     // Update db with our changes
                     ContentValues values = new ContentValues();
                     values.put( ItemTable.COLUMN_ISMARKED, newItem.isMarked() );
                     values.put( ItemTable.COLUMN_ISDELETED, newItem.isDeleted() );
-                    values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, curTimeStamp );
+                    values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, newItem.getTimeStamp() );
                     long itemId = existingItem.getId();
 
                     Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );

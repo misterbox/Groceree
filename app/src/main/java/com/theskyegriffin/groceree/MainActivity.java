@@ -32,7 +32,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     private SelectionAdapter adapter;
 
     public static final String SCHEME = "content://";
-    public static final String AUTHORITY = "com.theskyegriffin.groceree.contentprovider";
+    public static final String AUTHORITY = ItemContentProvider.AUTHORITY;
     public static final String TABLE_PATH = "items";
     Uri uri;
     ContentResolver resolver;
