@@ -3,6 +3,8 @@
     <item android:id="@+id/action_settings" android:title="@string/action_settings"
         android:orderInCategory="100" android:showAsAction="never" />
 
+    <item android:id="@+id/action_deleteMarked"
+        android:title="@string/action_delete_marked"/>
     <item android:id="@+id/action_showdb"
         android:title="@string/action_show_db"/>
     <item android:id="@+id/action_server_list"

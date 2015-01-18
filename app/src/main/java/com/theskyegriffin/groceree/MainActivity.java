@@ -213,6 +213,20 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         getContentResolver().update(uri, values, null, null);
     }
 
+    // Set marked items on the list to isDeleted = true
+    public void deleteMarkedItems() {
+        // Uri is going to be the base path, since we are updating multiple items
+        Uri uri = ItemContentProvider.CONTENT_URI;
+
+        // Items selected will have their 'isDeleted' column set to 'true'
+        ContentValues values = new ContentValues();
+        values.put( ItemTable.COLUMN_ISDELETED, true );
+
+        // Update all items setting 'isDeleted' = true where 'isMarked' = true
+        getContentResolver().update( uri, values, ItemTable.COLUMN_ISMARKED + "=?",
+                new String[] { String.valueOf( 1 ) } );
+    }
+
     @Override
     public boolean onCreateOptionsMenu( Menu menu ) {
         // Inflate the CAB_menu; this adds items to the action bar if it is present.
@@ -230,6 +244,10 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         switch ( id ) {
             case R.id.action_settings:
                 return true;
+
+            case R.id.action_deleteMarked:
+                deleteMarkedItems();
+                break;
 
             case R.id.action_showdb:
                 Intent intent = new Intent( this, ShowDB.class );
