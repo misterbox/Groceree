@@ -28,8 +28,6 @@ import java.util.List;
  * Abstracts data transfer to/from the Groceree server
  * Handles tracking the most recent check-in, polling for list updates,
  * and updating our database adapters with recent item changes.
- *
- * TODO: How often should we poll? How do we schedule them efficiently?
  */
 public class ServerDataSource {
     private String TAG = this.getClass().getSimpleName();
@@ -49,6 +47,11 @@ public class ServerDataSource {
     private String TIMESTAMP_PREF = "last_checkin_timestamp";
 
     private ContentProviderClient providerClient;
+
+    String[] allColumns = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
+            ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP, ItemTable.COLUMN_VERSION,
+            ItemTable.COLUMN_ISPENDING };
+
 
     public ServerDataSource( Context context ) {
         sharedPref = context.getSharedPreferences( TAG, Context.MODE_PRIVATE );
@@ -78,8 +81,8 @@ public class ServerDataSource {
             mRequestQueue.add( jsonReq );
         } else { // POST request to '/syncItems' endpoint
 
-            // Get items that have been updated since our last check-in
-            List<Item> updatedItems = getItemsSinceTimestamp( lastCheckIn );
+            // Get items that are set to pending
+            List<Item> updatedItems = getPendingItems();
 
             if( updatedItems != null ) {
                 // Convert 'updatedItems' to JSON array
@@ -108,10 +111,12 @@ public class ServerDataSource {
             for( Iterator<Item> i = itemsList.iterator(); i.hasNext(); ) {
                 Item item = i.next();
                 JSONObject itemObj = new JSONObject();
+                itemObj.put( "id", item.getId() );
                 itemObj.put( "item", item.toString() );
                 itemObj.put( "isMarked", item.isMarked() );
                 itemObj.put( "isDeleted", item.isDeleted() );
                 itemObj.put( "timestamp", item.getTimeStamp() );
+                itemObj.put( "version", item.getVersion() );
 
                 itemsJSONAry.put( itemObj );
             }
@@ -198,10 +203,13 @@ public class ServerDataSource {
                 if( index == -1 ){
                     // Add Item to the db and 'itemsStored'
                     ContentValues values = new ContentValues();
+                    values.put( ItemTable.COLUMN_ITEM_ID, newItem.getId() );
                     values.put( ItemTable.COLUMN_ITEM, newItem.getItem() );
                     values.put( ItemTable.COLUMN_ISMARKED, newItem.isMarked() );
                     values.put( ItemTable.COLUMN_ISDELETED, newItem.isDeleted() );
                     values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, newItem.getTimeStamp() );
+                    values.put( ItemTable.COLUMN_VERSION, newItem.getVersion() );
+                    values.put( ItemTable.COLUMN_ISPENDING, false );    // Because this is a new Item provided by the server, we do not need to set to pending
 
                     try {
                         providerClient.insert( ItemContentProvider.CONTENT_URI, values );
@@ -216,15 +224,18 @@ public class ServerDataSource {
 
                     // Update 'existingItem' with values from 'newItem'
                     existingItem.setMarked( newItem.isMarked() );
-                    existingItem.setDeleted( newItem.isDeleted() );
-                    existingItem.setTimeStamp( newItem.getTimeStamp() );
+                    existingItem.setDeleted(newItem.isDeleted());
+                    existingItem.setTimeStamp(newItem.getTimeStamp());
+                    existingItem.setVersion( newItem.getVersion() );
 
                     // Update db with our changes
                     ContentValues values = new ContentValues();
                     values.put( ItemTable.COLUMN_ISMARKED, newItem.isMarked() );
                     values.put( ItemTable.COLUMN_ISDELETED, newItem.isDeleted() );
                     values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, newItem.getTimeStamp() );
-                    long itemId = existingItem.getId();
+                    values.put( ItemTable.COLUMN_VERSION, newItem.getVersion() );
+                    values.put( ItemTable.COLUMN_ISPENDING, false );
+                    String itemId = existingItem.getId();
 
                     Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
 
@@ -254,17 +265,22 @@ public class ServerDataSource {
     }
 
     private List<Item> getAllItems() {
-        // Makes use of 'getItemsSinceTimestamp' by querying for all Items since the beginning of time
-        return getItemsSinceTimestamp( 0 );
+    try {
+        Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, allColumns, null, null, null );
+
+        return cursorToList(results);
+    } catch ( RemoteException e ) {
+        e.printStackTrace();
     }
 
-    private List<Item> getItemsSinceTimestamp( long timestamp ) {
-        String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
-                ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
+    // By default, return an empty list
+    return null;
+    }
 
+    private List<Item> getPendingItems() {
         try {
-            Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, projection, ItemTable.COLUMN_ITEM_TIMESTAMP
-                    + ">?", new String[] { String.valueOf( timestamp ) }, null );
+            Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, allColumns, ItemTable.COLUMN_ISPENDING
+                    + "=?", new String[] { "1" }, null );
 
             return cursorToList( results );
         } catch ( RemoteException e ) {
@@ -295,7 +311,7 @@ public class ServerDataSource {
     // Convert an individual Cursor row in to an Item
     private Item cursorToItem( Cursor cursor ){
         Item item = new Item();
-        item.setId( cursor.getLong( 0 ) );
+        item.setId( cursor.getString( 0 ) );
         item.setItem( cursor.getString( 1 ) );
 
         int isMarkedInt = cursor.getInt( 2 );
@@ -313,6 +329,7 @@ public class ServerDataSource {
         }
 
         item.setTimeStamp( cursor.getInt( 4 ) );
+        item.setVersion( cursor.getInt( 5 ) );
 
         return item;
     }

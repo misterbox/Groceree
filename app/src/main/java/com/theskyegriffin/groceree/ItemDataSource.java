@@ -50,6 +50,7 @@ public class ItemDataSource {
         return newItem;
     }
 
+/*
     public long insertItem( Item item ) {
         if( item == null ) {
             return -1;
@@ -66,6 +67,7 @@ public class ItemDataSource {
 
         return insertId;
     }
+*/
 
     // TODO: Update item
     public int updateItem( Item item, long timestamp ) {
@@ -79,12 +81,14 @@ public class ItemDataSource {
                 new String[] { String.valueOf( item.getId() ) } );
     }
 
+/*
     public void deleteItem( Item item ) {
         long id = item.getId();
 
         database.delete( MySQLiteHelper.TABLE_ITEM, MySQLiteHelper.COLUMN_ITEM_ID + " = "
          + id, null);
     }
+*/
 
     // Method used by 'MainActivity' to get all items with 'isDeleted' set to false.
     // Basically gets all items on the list that haven't been deleted.
@@ -127,7 +131,7 @@ public class ItemDataSource {
 
     private Item cursorToItem( Cursor cursor ){
         Item item = new Item();
-        item.setId( cursor.getLong( 0 ) );
+        item.setId( cursor.getString( 0 ) );
         item.setItem( cursor.getString( 1 ) );
 
         int isMarkedInt = cursor.getInt( 2 );

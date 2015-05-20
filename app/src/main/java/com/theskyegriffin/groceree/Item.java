@@ -7,11 +7,13 @@ import java.util.Locale;
  * Created by skybox on 11/12/14.
  */
 public class Item implements Comparable<Item> {
-    private long id; // Column index 0
+    private String id; // Column index 0
     private String item; //Column index 1
     private boolean isMarked;   // Column index 2
     private boolean isDeleted; // Column index 3
     private long timestamp; // Column index 4
+    private long version;   // Column index 5
+    private boolean isPending; // Column index 6
 
     // Implemented to support the 'indexOf()' method for an Item list
     @Override
@@ -32,11 +34,11 @@ public class Item implements Comparable<Item> {
         return this.toString().compareTo( another.toString() );
     }
 
-    public long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId( long id ) {
+    public void setId( String id ) {
         this.id = id;
     }
 
@@ -50,7 +52,7 @@ public class Item implements Comparable<Item> {
 
     // Will be used by the ArrayAdapter in the ListView
     public String toString() {
-        return item;
+        return id;
     }
 
     public boolean isMarked() {
@@ -83,5 +85,21 @@ public class Item implements Comparable<Item> {
 
     public void setTimeStamp( long timeStamp ) {
         this.timestamp = timeStamp;
+    }
+
+    public long getVersion() {
+        return version;
+    }
+
+    public void setVersion(long version) {
+        this.version = version;
+    }
+
+    public void setPending( boolean isPending ) {
+        this.isPending = isPending;
+    }
+
+    public boolean isPending() {
+        return isPending;
     }
 }

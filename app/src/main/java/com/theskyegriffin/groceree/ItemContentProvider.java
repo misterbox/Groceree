@@ -87,6 +87,7 @@ public class ItemContentProvider extends ContentProvider {
         if( !values.containsKey( ItemTable.COLUMN_ITEM_TIMESTAMP ) ) {
             values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
         }
+
         long id;
 
         switch( uriType ) {
@@ -167,7 +168,8 @@ public class ItemContentProvider extends ContentProvider {
 
     private void checkColumns( String[] projection ) {
         String[] available = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM,
-            ItemTable.COLUMN_ISMARKED, ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
+            ItemTable.COLUMN_ISMARKED, ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP,
+            ItemTable.COLUMN_ISPENDING, ItemTable.COLUMN_VERSION };
 
         if( projection != null ) {
             HashSet<String> requestedColumns = new HashSet<String>( Arrays.asList( projection ) );

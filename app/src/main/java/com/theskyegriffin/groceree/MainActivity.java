@@ -28,6 +28,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.UUID;
+
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private SelectionAdapter adapter;
 
@@ -176,10 +178,16 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         String itemName = editText.getText().toString();
 
         // Clear editText
-        editText.setText( "" );
+        editText.setText("");
 
         ContentValues values = new ContentValues();
+
+        UUID newItemUUID = UUID.randomUUID();
+        //TODO: I need to create an item object id here
+        values.put( ItemTable.COLUMN_ITEM_ID, newItemUUID.toString() );
         values.put( ItemTable.COLUMN_ITEM, itemName );
+        values.put( ItemTable.COLUMN_ISPENDING, true );
+        values.put( ItemTable.COLUMN_VERSION, 1 );
 
         Uri itemURI = getContentResolver().insert( ItemContentProvider.CONTENT_URI, values );
 
@@ -194,6 +202,9 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
         ContentValues values = new ContentValues();
         values.put(ItemTable.COLUMN_ISMARKED, isMarked);
+        values.put( ItemTable.COLUMN_ISPENDING, true );
+        values.put( ItemTable.COLUMN_VERSION, ItemTable.COLUMN_VERSION + "+1" );
+
         String itemName = markedItem.getString( 1 );
         String message = String.format( "%s updated, isMarked: %b", itemName, isMarked );
         Log.w( this.getClass().getName(), message );
@@ -205,10 +216,12 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public void markedItemDeleted( int position ) {
         Cursor selectedItem = ( Cursor ) adapter.getItem( position );
         int itemId = selectedItem.getInt( 0 );
-        Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
+        Uri uri = Uri.parse(ItemContentProvider.CONTENT_URI + "/" + itemId);
 
         ContentValues values = new ContentValues();
         values.put( ItemTable.COLUMN_ISDELETED, true );
+        values.put( ItemTable.COLUMN_ISPENDING, true );
+        values.put( ItemTable.COLUMN_VERSION, ItemTable.COLUMN_VERSION + "+1" );
 
         getContentResolver().update(uri, values, null, null);
     }
@@ -221,6 +234,8 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         // Items selected will have their 'isDeleted' column set to 'true'
         ContentValues values = new ContentValues();
         values.put( ItemTable.COLUMN_ISDELETED, true );
+        values.put( ItemTable.COLUMN_ISPENDING, true );
+        values.put( ItemTable.COLUMN_VERSION, ItemTable.COLUMN_VERSION + "+1" );
 
         // Update all items setting 'isDeleted' = true where 'isMarked' = true
         getContentResolver().update( uri, values, ItemTable.COLUMN_ISMARKED + "=?",
@@ -288,7 +303,8 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     public Loader<Cursor> onCreateLoader( int id, Bundle args ) {
         // Get all columns from all items in the database with the 'isDeleted' column set to 0 (false)
         String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
-            ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP };
+            ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP, ItemTable.COLUMN_VERSION,
+            ItemTable.COLUMN_ISPENDING };
 
         return new CursorLoader( this, ItemContentProvider.CONTENT_URI, projection,
                 "isDeleted=?", new String[] { "0" }, ItemTable.COLUMN_ITEM + " ASC" );
