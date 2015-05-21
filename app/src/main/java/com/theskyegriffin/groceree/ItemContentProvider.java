@@ -33,7 +33,7 @@ public class ItemContentProvider extends ContentProvider {
     private static final UriMatcher sURIMatcher = new UriMatcher( UriMatcher.NO_MATCH );
     static {
         sURIMatcher.addURI( AUTHORITY, BASE_PATH, ITEMS );
-        sURIMatcher.addURI( AUTHORITY, BASE_PATH + "/#", ITEM_ID );
+        sURIMatcher.addURI( AUTHORITY, BASE_PATH + "/*", ITEM_ID );
     }
 
     @Override
@@ -152,7 +152,7 @@ public class ItemContentProvider extends ContentProvider {
 
                 if( TextUtils.isEmpty( selection ) ) {
                     rowsUpdated = sqlDB.update( ItemTable.TABLE_ITEM, values, ItemTable.COLUMN_ITEM_ID
-                        + "=" + id, null );
+                        + "=?", new String[] { id } );
                 } else {
                     rowsUpdated = sqlDB.update( ItemTable.TABLE_ITEM, values, ItemTable.COLUMN_ITEM_ID
                         + "=" + id + " and " + selection, selectionArgs );

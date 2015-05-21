@@ -112,7 +112,7 @@ public class ServerDataSource {
                 Item item = i.next();
                 JSONObject itemObj = new JSONObject();
                 itemObj.put( "id", item.getId() );
-                itemObj.put( "item", item.toString() );
+                itemObj.put( "item", item.getItem() );
                 itemObj.put( "isMarked", item.isMarked() );
                 itemObj.put( "isDeleted", item.isDeleted() );
                 itemObj.put( "timestamp", item.getTimeStamp() );
@@ -154,10 +154,12 @@ public class ServerDataSource {
             for( int i = 0; i < itemsAry.length(); i++ ) {
                 JSONObject item = itemsAry.getJSONObject( i );
                 Item newItem = new Item();
+                newItem.setId( item.getString( "id" ) );
                 newItem.setItem( item.optString( "item" ) );
                 newItem.setMarked( item.optBoolean( "isMarked" ) );
                 newItem.setDeleted( item.optBoolean( "isDeleted" ) );
                 newItem.setTimeStamp( item.optLong( "timestamp" ) );
+                newItem.setVersion( item.optInt( "version" ) );
 
                 String message = String.format( "i: %d, item: %s", i, newItem );
                 Log.i( TAG, message );

@@ -197,11 +197,11 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
     public void toggleItemIsMarked( int position, boolean isMarked ) {
         Cursor markedItem = ( Cursor ) adapter.getItem( position );
-        int itemId = markedItem.getInt( 0 );
-        Uri uri = Uri.parse(ItemContentProvider.CONTENT_URI + "/" + itemId);
+        String itemId = markedItem.getString( 0 );
+        Uri uri = Uri.parse( ItemContentProvider.CONTENT_URI + "/" + itemId );
 
         ContentValues values = new ContentValues();
-        values.put(ItemTable.COLUMN_ISMARKED, isMarked);
+        values.put( ItemTable.COLUMN_ISMARKED, isMarked );
         values.put( ItemTable.COLUMN_ISPENDING, true );
         values.put( ItemTable.COLUMN_VERSION, ItemTable.COLUMN_VERSION + "+1" );
 
@@ -209,7 +209,7 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
         String message = String.format( "%s updated, isMarked: %b", itemName, isMarked );
         Log.w( this.getClass().getName(), message );
 
-        getContentResolver().update(uri, values, null, null);
+        getContentResolver().update( uri, values, null, null );
     }
 
     // Set item as 'deleted' and therefore no longer needed on the list.
