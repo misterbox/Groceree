@@ -1,49 +1,66 @@
 package com.theskyegriffin.groceree;
 
-import android.app.ListActivity;
+import android.app.ListFragment;
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.SimpleCursorAdapter;
 
-import java.util.List;
+public class ShowDB extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    private SimpleCursorAdapter adapter;
 
-public class ShowDB extends ListActivity {
-    private ItemDataSource dataSource;
+    private String[] allColumns = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
+            ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP, ItemTable.COLUMN_VERSION,
+            ItemTable.COLUMN_ISPENDING };
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_db);
 
-        dataSource = new ItemDataSource( this );
-        dataSource.open();
-
-        List<Item> items = dataSource.getAllItems();
-
-        final ItemAdapter itemAdapter = new ItemAdapter( this, R.layout.listview_row_item, items );
-
-        setListAdapter( itemAdapter );
+        displayListView();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the CAB_menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_show_db, menu);
-        return true;
+    public void onResume() {
+        super.onResume();
+
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
+    private void displayListView() {
+        int[] to = new int[] {
+                R.id.textViewID,
+                R.id.textViewItem,
+                R.id.tvMarked,
+                R.id.tvDeleted,
+                R.id.textViewTimeStamp,
+                R.id.tvVersion,
+                R.id.tvPending,
+        };
+
+        adapter = new SimpleCursorAdapter( getActivity(), R.layout.listview_row_item, null,
+                allColumns, to, 0 );
+
+        setListAdapter(adapter);
+        getLoaderManager().initLoader(0, null, this);
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+    public Loader<Cursor> onCreateLoader( int id, Bundle args ) {
+        return new CursorLoader( getActivity(), ItemContentProvider.CONTENT_URI,
+                allColumns, null, null, null );
+    }
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+    @Override
+    public void onLoadFinished( Loader<Cursor> loader, Cursor data ) {
+        adapter.swapCursor(data);
+        adapter.notifyDataSetChanged();
+    }
 
-        return super.onOptionsItemSelected(item);
+    @Override
+    public void onLoaderReset( Loader<Cursor> loader ) {
+        adapter.swapCursor( null );
     }
 }
