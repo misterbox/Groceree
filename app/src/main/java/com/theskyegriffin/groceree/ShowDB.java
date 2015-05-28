@@ -1,6 +1,6 @@
 package com.theskyegriffin.groceree;
 
-import android.app.ListFragment;
+import android.app.ListActivity;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -8,7 +8,7 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.widget.SimpleCursorAdapter;
 
-public class ShowDB extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class ShowDB extends ListActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private SimpleCursorAdapter adapter;
 
     private String[] allColumns = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
@@ -40,7 +40,7 @@ public class ShowDB extends ListFragment implements LoaderManager.LoaderCallback
                 R.id.tvPending,
         };
 
-        adapter = new SimpleCursorAdapter( getActivity(), R.layout.listview_row_item, null,
+        adapter = new SimpleCursorAdapter( this, R.layout.listview_row_item, null,
                 allColumns, to, 0 );
 
         setListAdapter(adapter);
@@ -49,7 +49,7 @@ public class ShowDB extends ListFragment implements LoaderManager.LoaderCallback
 
     @Override
     public Loader<Cursor> onCreateLoader( int id, Bundle args ) {
-        return new CursorLoader( getActivity(), ItemContentProvider.CONTENT_URI,
+        return new CursorLoader( this, ItemContentProvider.CONTENT_URI,
                 allColumns, null, null, null );
     }
 
