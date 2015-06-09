@@ -28,6 +28,8 @@ import java.util.List;
  * Abstracts data transfer to/from the Groceree server
  * Handles tracking the most recent check-in, polling for list updates,
  * and updating our database adapters with recent item changes.
+ *
+ * TODO: Send the current timestamp along with the last check-in to server.
  */
 public class ServerDataSource {
     private String TAG = this.getClass().getSimpleName();
@@ -270,7 +272,7 @@ public class ServerDataSource {
     try {
         Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, allColumns, null, null, null );
 
-        return cursorToList(results);
+        return ItemUtils.cursorToList( results );
     } catch ( RemoteException e ) {
         e.printStackTrace();
     }
@@ -284,56 +286,13 @@ public class ServerDataSource {
             Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, allColumns, ItemTable.COLUMN_ISPENDING
                     + "=?", new String[] { "1" }, null );
 
-            return cursorToList( results );
+            return ItemUtils.cursorToList( results );
         } catch ( RemoteException e ) {
             e.printStackTrace();
         }
 
         // By default, return an empty list
         return null;
-    }
-
-    // Convert a cursor of Items in to an ArrayList
-    private List<Item> cursorToList( Cursor cursor ) {
-        List<Item> items = new ArrayList<Item>();
-
-        cursor.moveToFirst();
-
-        while( !cursor.isAfterLast() ) {
-            Item item = cursorToItem( cursor );
-            items.add( item );
-            cursor.moveToNext();
-        }
-
-        cursor.close();
-
-        return items;
-    }
-
-    // Convert an individual Cursor row in to an Item
-    private Item cursorToItem( Cursor cursor ){
-        Item item = new Item();
-        item.setId( cursor.getString( 0 ) );
-        item.setItem( cursor.getString( 1 ) );
-
-        int isMarkedInt = cursor.getInt( 2 );
-        if( isMarkedInt != 0 ) {
-            item.setMarked( true );
-        } else {
-            item.setMarked( false );
-        }
-
-        int isDeletedInt = cursor.getInt( 3 );
-        if( isDeletedInt != 0 ) {
-            item.setDeleted( true );
-        } else {
-            item.setDeleted( false );
-        }
-
-        item.setTimeStamp( cursor.getInt( 4 ) );
-        item.setVersion( cursor.getInt( 5 ) );
-
-        return item;
     }
 
 }
