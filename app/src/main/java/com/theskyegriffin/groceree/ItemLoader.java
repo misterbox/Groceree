@@ -140,7 +140,7 @@ public class ItemLoader extends AsyncTaskLoader<List<Item>> {
 
         @Override
         public void onChange( boolean selfChange, Uri changeUri ) {
-            //SyncUtils.TriggerRefresh();
+            SyncUtils.TriggerRefresh();
             onContentChanged();
         }
     }

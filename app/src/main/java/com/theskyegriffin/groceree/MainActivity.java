@@ -30,12 +30,8 @@ import java.util.UUID;
 
 public class MainActivity extends ListActivity implements LoaderManager.LoaderCallbacks<List<Item>> {
     private SelectionAdapter adapter;
-    private List<Item> activeItems;
     private SparseBooleanArray markedItems;
 
-    public static final String SCHEME = "content://";
-    public static final String AUTHORITY = ItemContentProvider.AUTHORITY;
-    public static final String TABLE_PATH = "items";
     ContentResolver resolver;
 
     protected void onCreate( Bundle savedInstanceState ) {
@@ -307,9 +303,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished( Loader<List<Item>> loader, List<Item> data ) {
-        // Update our list of active items
-        activeItems = data;
-
         // Create boolean array of marked items
         setMarkedItems( data );
         adapter.swapData( data );
