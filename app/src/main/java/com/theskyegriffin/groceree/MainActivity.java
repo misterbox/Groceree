@@ -237,6 +237,8 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
     // Helper method to create boolean array of Items where isMarked=true
     // This will be called after our Loader is finished
     private void setMarkedItems( List<Item> items ) {
+        // Clear 'markedItems' before determining the new positions of marked Items.
+        markedItems = new SparseBooleanArray();
         int position = 0;
 
         for (Iterator<Item> iterator = items.iterator(); iterator.hasNext(); ) {

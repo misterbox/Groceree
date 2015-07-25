@@ -77,7 +77,7 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
         v.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
 
         if( mSelectedItems.get( position ) != false ) {
-            convertView.setBackgroundColor( context.getResources().getColor( android.R.color.holo_blue_light ) );
+            v.setBackgroundColor( context.getResources().getColor( android.R.color.holo_blue_light ) );
         }
 
         return v;
