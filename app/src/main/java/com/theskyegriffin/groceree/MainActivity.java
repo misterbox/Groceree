@@ -273,16 +273,6 @@ public class MainActivity extends ListActivity implements LoaderManager.LoaderCa
                 deleteMarkedItems();
                 break;
 
-            case R.id.action_showdb:
-                Intent intent = new Intent( this, ShowDB.class );
-                startActivity( intent );
-                break;
-
-            case R.id.action_server_list:
-                intent = new Intent( this, ServerList.class );
-                startActivity( intent );
-                break;
-
             case R.id.action_server_sync:
                 SyncUtils.TriggerRefresh();
                 break;

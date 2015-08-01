@@ -25,22 +25,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.theskyegriffin.groceree.ShowDB"
-            android:label="@string/title_activity_show_db"
-            android:parentActivityName="com.theskyegriffin.groceree.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theskyegriffin.groceree.MainActivity" />
-        </activity>
-        <activity
-            android:name="com.theskyegriffin.groceree.ServerList"
-            android:label="@string/title_activity_server_list"
-            android:parentActivityName="com.theskyegriffin.groceree.MainActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.theskyegriffin.groceree.MainActivity" />
-        </activity>
         <provider
             android:authorities="com.theskyegriffin.groceree.contentprovider"
             android:name="com.theskyegriffin.groceree.ItemContentProvider"

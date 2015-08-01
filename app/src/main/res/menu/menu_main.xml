@@ -5,10 +5,6 @@
 
     <item android:id="@+id/action_deleteMarked"
         android:title="@string/action_delete_marked"/>
-    <item android:id="@+id/action_showdb"
-        android:title="@string/action_show_db"/>
-    <item android:id="@+id/action_server_list"
-        android:title="@string/action_server_list"/>
     <item android:id="@+id/action_server_sync"
         android:title="@string/action_server_sync"/>
 </menu>

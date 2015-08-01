@@ -34,7 +34,7 @@ public class ItemTable {
     }
 
     public static void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
-        Log.w(MySQLiteHelper.class.getName(),
+        Log.w(ItemTable.class.getName(),
                 "Upgrading database from version " + oldVersion + " to "
                         + newVersion);
         db.execSQL( "DROP TABLE IF EXISTS " + TABLE_ITEM );
