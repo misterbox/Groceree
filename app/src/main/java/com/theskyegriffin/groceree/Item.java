@@ -6,7 +6,7 @@ import java.util.Locale;
 /**
  * Created by skybox on 11/12/14.
  */
-public class Item implements Comparable<Item> {
+public class Item implements Comparable< Item > {
     private String id; // Column index 0
     private String item; //Column index 1
     private boolean isMarked;   // Column index 2
@@ -91,7 +91,7 @@ public class Item implements Comparable<Item> {
         return version;
     }
 
-    public void setVersion(long version) {
+    public void setVersion( long version ) {
         this.version = version;
     }
 

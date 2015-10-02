@@ -10,12 +10,12 @@ import java.util.List;
  */
 public class ItemUtils {
     // Convert a cursor of Items in to an ArrayList
-    public static List<Item> cursorToList( Cursor cursor ) {
-        List<Item> items = new ArrayList<Item>();
+    public static List< Item > cursorToList( Cursor cursor ) {
+        List< Item > items = new ArrayList< Item >();
 
         cursor.moveToFirst();
 
-        while( !cursor.isAfterLast() ) {
+        while( ! cursor.isAfterLast() ) {
             Item item = cursorToItem( cursor );
             items.add( item );
             cursor.moveToNext();
@@ -27,7 +27,7 @@ public class ItemUtils {
     }
 
     // Convert an individual Cursor row in to an Item
-    private static Item cursorToItem( Cursor cursor ){
+    private static Item cursorToItem( Cursor cursor ) {
         Item item = new Item();
         int idColIdx = cursor.getColumnIndex( ItemTable.COLUMN_ITEM_ID );
         item.setId( cursor.getString( idColIdx ) );

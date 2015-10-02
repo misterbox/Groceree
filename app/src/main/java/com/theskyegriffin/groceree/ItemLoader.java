@@ -12,11 +12,11 @@ import java.util.List;
 
 /**
  * Created by skybox on 6/4/15.
- *
+ * <p/>
  * Much of the inspiration here can be credited back to Alex Lockwood (great guy).
  * http://www.androiddesignpatterns.com/2012/08/implementing-loaders.html
  */
-public class ItemLoader extends AsyncTaskLoader<List<Item>> {
+public class ItemLoader extends AsyncTaskLoader< List< Item > > {
     String[] projection = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM, ItemTable.COLUMN_ISMARKED,
             ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP, ItemTable.COLUMN_VERSION,
             ItemTable.COLUMN_ISPENDING };
@@ -28,7 +28,7 @@ public class ItemLoader extends AsyncTaskLoader<List<Item>> {
     ContentResolver resolver;
     ItemObserver mObserver;
 
-    private List<Item> mData;
+    private List< Item > mData;
 
     public ItemLoader( Context context ) {
         super( context );
@@ -43,10 +43,10 @@ public class ItemLoader extends AsyncTaskLoader<List<Item>> {
     }
 
     @Override
-    public List<Item> loadInBackground() {
+    public List< Item > loadInBackground() {
         // Get all active items from provider
-        Cursor cursor = resolver.query(ItemContentProvider.CONTENT_URI, projection, "isDeleted=?",
-                new String[]{"0"}, ItemTable.COLUMN_ITEM + " ASC");
+        Cursor cursor = resolver.query( ItemContentProvider.CONTENT_URI, projection, "isDeleted=?",
+                new String[]{ "0" }, ItemTable.COLUMN_ITEM + " ASC" );
 
         //TODO: Check if cursor actually contains data
         // Also close it
@@ -54,13 +54,13 @@ public class ItemLoader extends AsyncTaskLoader<List<Item>> {
     }
 
     @Override
-    public void deliverResult( List<Item> data ) {
+    public void deliverResult( List< Item > data ) {
         if( isReset() ) {
             releaseResources( data );
             return;
         }
 
-        List<Item> oldData = mData;
+        List< Item > oldData = mData;
         mData = data;
 
         if( isStarted() ) {
@@ -76,7 +76,7 @@ public class ItemLoader extends AsyncTaskLoader<List<Item>> {
     protected void onStartLoading() {
         if( mData != null ) {
             // If we have a result available, deliver it immediately
-            deliverResult(mData);
+            deliverResult( mData );
         }
 
         // Start watching for changes in the Item data
@@ -118,13 +118,13 @@ public class ItemLoader extends AsyncTaskLoader<List<Item>> {
     }
 
     @Override
-    public void onCanceled( List<Item> data ) {
+    public void onCanceled( List< Item > data ) {
         // Attempt to cancel the current asynchronous load
-        super.onCanceled(data);
+        super.onCanceled( data );
         releaseResources( mData );
     }
 
-    private void releaseResources( List<Item> data ) {
+    private void releaseResources( List< Item > data ) {
         data = null;
     }
 

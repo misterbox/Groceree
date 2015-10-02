@@ -31,6 +31,7 @@ public class ItemContentProvider extends ContentProvider {
     public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/item";
 
     private static final UriMatcher sURIMatcher = new UriMatcher( UriMatcher.NO_MATCH );
+
     static {
         sURIMatcher.addURI( AUTHORITY, BASE_PATH, ITEMS );
         sURIMatcher.addURI( AUTHORITY, BASE_PATH + "/*", ITEM_ID );
@@ -84,7 +85,7 @@ public class ItemContentProvider extends ContentProvider {
         SQLiteDatabase sqlDB = database.getWritableDatabase();
 
         // If a timestamp is not present, mark the current timestamp for our insert
-        if( !values.containsKey( ItemTable.COLUMN_ITEM_TIMESTAMP ) ) {
+        if( ! values.containsKey( ItemTable.COLUMN_ITEM_TIMESTAMP ) ) {
             values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
         }
 
@@ -118,10 +119,10 @@ public class ItemContentProvider extends ContentProvider {
 
                 if( TextUtils.isEmpty( selection ) ) {
                     rowsDeleted = sqlDB.delete( ItemTable.TABLE_ITEM, ItemTable.COLUMN_ITEM_ID +
-                        "=" + id, null );
+                            "=" + id, null );
                 } else {
                     rowsDeleted = sqlDB.delete( ItemTable.TABLE_ITEM, ItemTable.COLUMN_ITEM_ID + "="
-                        + id + " and " + selection, selectionArgs );
+                            + id + " and " + selection, selectionArgs );
                 }
                 break;
             default:
@@ -139,7 +140,7 @@ public class ItemContentProvider extends ContentProvider {
         int rowsUpdated;
 
         // If a timestamp is not present, mark the current timestamp for our insert
-        if( !values.containsKey( ItemTable.COLUMN_ITEM_TIMESTAMP ) ) {
+        if( ! values.containsKey( ItemTable.COLUMN_ITEM_TIMESTAMP ) ) {
             values.put( ItemTable.COLUMN_ITEM_TIMESTAMP, getCurrentTime() );
         }
 
@@ -152,10 +153,10 @@ public class ItemContentProvider extends ContentProvider {
 
                 if( TextUtils.isEmpty( selection ) ) {
                     rowsUpdated = sqlDB.update( ItemTable.TABLE_ITEM, values, ItemTable.COLUMN_ITEM_ID
-                        + "=?", new String[] { id } );
+                            + "=?", new String[]{ id } );
                 } else {
                     rowsUpdated = sqlDB.update( ItemTable.TABLE_ITEM, values, ItemTable.COLUMN_ITEM_ID
-                        + "=" + id + " and " + selection, selectionArgs );
+                            + "=" + id + " and " + selection, selectionArgs );
                 }
                 break;
             default:
@@ -168,15 +169,15 @@ public class ItemContentProvider extends ContentProvider {
 
     private void checkColumns( String[] projection ) {
         String[] available = { ItemTable.COLUMN_ITEM_ID, ItemTable.COLUMN_ITEM,
-            ItemTable.COLUMN_ISMARKED, ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP,
-            ItemTable.COLUMN_ISPENDING, ItemTable.COLUMN_VERSION };
+                ItemTable.COLUMN_ISMARKED, ItemTable.COLUMN_ISDELETED, ItemTable.COLUMN_ITEM_TIMESTAMP,
+                ItemTable.COLUMN_ISPENDING, ItemTable.COLUMN_VERSION };
 
         if( projection != null ) {
-            HashSet<String> requestedColumns = new HashSet<String>( Arrays.asList( projection ) );
-            HashSet<String> availableColumns = new HashSet<String>( Arrays.asList( available ) );
+            HashSet< String > requestedColumns = new HashSet< String >( Arrays.asList( projection ) );
+            HashSet< String > availableColumns = new HashSet< String >( Arrays.asList( available ) );
 
             // Check if all requested columns are available
-            if( !availableColumns.containsAll( requestedColumns ) ) {
+            if( ! availableColumns.containsAll( requestedColumns ) ) {
                 throw new IllegalArgumentException( "Unknown columns in projection" );
             }
         }

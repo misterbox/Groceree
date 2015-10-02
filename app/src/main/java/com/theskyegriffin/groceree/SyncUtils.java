@@ -40,7 +40,7 @@ public class SyncUtils {
         // Schedule an initial sync if we detect problems with either our account or our local
         // data has been deleted. ( Note that it's possible to clear app data without affecting
         // the account list, so we need to check both. )
-        if( newAccount || !setupComplete ) {
+        if( newAccount || ! setupComplete ) {
             TriggerRefresh();
             PreferenceManager.getDefaultSharedPreferences( context ).edit()
                     .putBoolean( PREF_SETUP_COMPLETE, true ).commit();

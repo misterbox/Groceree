@@ -14,7 +14,7 @@ public class ItemSyncAdapter extends AbstractThreadedSyncAdapter {
     ServerDataSource dataSource;
 
     public ItemSyncAdapter( Context context, boolean autoInitialize ) {
-        super(context, autoInitialize);
+        super( context, autoInitialize );
 
         dataSource = new ServerDataSource( context );
     }
@@ -24,7 +24,7 @@ public class ItemSyncAdapter extends AbstractThreadedSyncAdapter {
                                SyncResult syncResult ) {
         try {
             dataSource.serverSync( providerClient );
-        } catch ( Exception e ) {
+        } catch( Exception e ) {
             e.printStackTrace();
         }
     }

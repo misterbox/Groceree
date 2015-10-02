@@ -32,8 +32,9 @@ public class Authenticator extends AbstractAccountAuthenticator {
         return null;
     }
 
-    @Override public Bundle getAuthToken( AccountAuthenticatorResponse response, Account account,
-                                          String s, Bundle bundle ) throws NetworkErrorException {
+    @Override
+    public Bundle getAuthToken( AccountAuthenticatorResponse response, Account account,
+                                String s, Bundle bundle ) throws NetworkErrorException {
         throw new UnsupportedOperationException();
     }
 

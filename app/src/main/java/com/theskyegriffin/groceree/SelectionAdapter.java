@@ -1,30 +1,33 @@
 package com.theskyegriffin.groceree;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.SparseBooleanArray;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
 import java.util.List;
 
 /**
  * Created by skybox on 11/15/14.
  */
-public class SelectionAdapter extends ArrayAdapter<Item> {
+public class SelectionAdapter extends ArrayAdapter< Item > {
     private SparseBooleanArray mSelectedItems;
     private Context context;
-    private List<Item> items;
+    private List< Item > items;
 
     public SelectionAdapter( Context context, int resource ) {
-        super( context, resource );
+        super( context, 0 );
         this.context = context;
         mSelectedItems = new SparseBooleanArray();
     }
 
     public void toggleSelection( int position ) {
-        setNewSelection( position, !mSelectedItems.get( position ) );
+        setNewSelection( position, ! mSelectedItems.get( position ) );
     }
 
     public void setNewSelection( int position, boolean value ) {
@@ -51,7 +54,7 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
     }
 
     // Used by the ItemLoader to replace current data set with updates
-    public void swapData( List<Item> data ) {
+    public void swapData( List< Item > data ) {
         if( data != null )
             items = data;
 
@@ -62,19 +65,30 @@ public class SelectionAdapter extends ArrayAdapter<Item> {
     @Override
     public View getView( int position, View convertView, ViewGroup parent ) {
         Item item = items.get( position );
-        View v = super.getView( position, convertView, parent ); // Let the adapter handle setting up the row views
-        TextView tvItem = ( TextView ) v.findViewById( android.R.id.text1 );
 
-        tvItem.setText( item.getItem() );
+        View v;
 
-        // Determine if Item 'isMarked' to set strikethrough
-        if( item.isMarked() ){
-            tvItem.setPaintFlags(tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+        if( convertView == null ) {
+            v = LayoutInflater.from( context ).inflate( R.layout.listview_row_item, parent, false );
         } else {
-            tvItem.setPaintFlags(tvItem.getPaintFlags() & (~Paint.STRIKE_THRU_TEXT_FLAG));
+            v = convertView;
         }
 
-        v.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
+        TextView tvItem = ( TextView ) v.findViewById( R.id.tvItemName );
+        TextView tvRowNum = ( TextView ) v.findViewById( R.id.tvRowNum );
+
+        tvItem.setText( item.getItem() );
+        tvRowNum.setText( Integer.toString( position + 1 ) + "." );
+
+        // Determine if Item 'isMarked' to set strikethrough
+        if( item.isMarked() ) {
+            tvItem.setPaintFlags( tvItem.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG );
+            tvItem.setTextColor( Color.parseColor( "#E8E8E8" ) );
+        } else {
+            tvItem.setPaintFlags( tvItem.getPaintFlags() & ( ~ Paint.STRIKE_THRU_TEXT_FLAG ) );
+            tvItem.setTextColor( Color.BLACK );
+            v.setBackgroundColor( context.getResources().getColor( android.R.color.background_light ) );
+        }
 
         if( mSelectedItems.get( position ) != false ) {
             v.setBackgroundColor( context.getResources().getColor( android.R.color.holo_blue_light ) );

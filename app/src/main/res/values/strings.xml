@@ -9,14 +9,8 @@
     <!-- CAB menu -->
     <string name="delete_item">Delete</string>
 
-    <!-- Activities -->
-    <string name="title_activity_show_db">ShowDB</string>
-    <string name="title_activity_server_list">ServerList</string>
-
     <!-- Activity Main options menu -->
     <string name="action_delete_marked">Delete marked items</string>
-    <string name="action_show_db">Show Database</string>
-    <string name="action_server_list">Get Server List</string>
     <string name="action_server_sync">Server Sync</string>
 
 </resources>

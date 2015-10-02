@@ -28,7 +28,7 @@ import java.util.List;
  * Abstracts data transfer to/from the Groceree server
  * Handles tracking the most recent check-in, polling for list updates,
  * and updating our database adapters with recent item changes.
- *
+ * <p/>
  * TODO: Send the current timestamp along with the last check-in to server.
  */
 public class ServerDataSource {
@@ -40,8 +40,8 @@ public class ServerDataSource {
     private String listEndPoint = "/list";
     private String syncEndPoint = "/syncItems";
 
-    private List<Item> itemsReceived;         // List of Item objects received from server
-    private List<Item> itemsStored;           // List of Item objects we currently know about
+    private List< Item > itemsReceived;         // List of Item objects received from server
+    private List< Item > itemsStored;           // List of Item objects we currently know about
 
     // Allows us to store the most recent check-in timestamp
     private SharedPreferences sharedPref;
@@ -62,7 +62,7 @@ public class ServerDataSource {
         this.lastCheckIn = getLastCheckIn();
         mRequestQueue = Volley.newRequestQueue( context );
 
-        itemsReceived = new ArrayList<Item>();
+        itemsReceived = new ArrayList< Item >();
     }
 
     // TODO: Should we use a ConnectionMananger here to determine if the network is available?
@@ -84,7 +84,7 @@ public class ServerDataSource {
         } else { // POST request to '/syncItems' endpoint
 
             // Get items that are set to pending
-            List<Item> updatedItems = getPendingItems();
+            List< Item > updatedItems = getPendingItems();
 
             if( updatedItems != null ) {
                 // Convert 'updatedItems' to JSON array
@@ -106,11 +106,11 @@ public class ServerDataSource {
         }
     }
 
-    private JSONArray itemsToJSONAry( List<Item> itemsList ) {
+    private JSONArray itemsToJSONAry( List< Item > itemsList ) {
         JSONArray itemsJSONAry = new JSONArray();
 
         try {
-            for( Iterator<Item> i = itemsList.iterator(); i.hasNext(); ) {
+            for( Iterator< Item > i = itemsList.iterator(); i.hasNext(); ) {
                 Item item = i.next();
                 JSONObject itemObj = new JSONObject();
                 itemObj.put( "id", item.getId() );
@@ -129,11 +129,11 @@ public class ServerDataSource {
         return itemsJSONAry;
     }
 
-    private class jsonRespListener implements Response.Listener<JSONObject> {
+    private class jsonRespListener implements Response.Listener< JSONObject > {
         @Override
         public void onResponse( JSONObject response ) {
             Log.i( TAG, response.toString() );
-            List<Item> servItems = parseJSON( response );
+            List< Item > servItems = parseJSON( response );
 
             updateItemList( servItems );
         }
@@ -146,8 +146,8 @@ public class ServerDataSource {
         }
     }
 
-    private List<Item> parseJSON( JSONObject json ) {
-        List<Item> items = new ArrayList<Item>();
+    private List< Item > parseJSON( JSONObject json ) {
+        List< Item > items = new ArrayList< Item >();
 
         try {
             long timestamp = json.optLong( "timestamp" );
@@ -191,20 +191,20 @@ public class ServerDataSource {
                 If true,
                     replace with item received
     */
-    private void updateItemList( List<Item> servItems ) {
+    private void updateItemList( List< Item > servItems ) {
         // If items were received
-        if( !servItems.isEmpty() ) {
+        if( ! servItems.isEmpty() ) {
 
             // Get a list of all the Items we know about
             itemsStored = getAllItems();
 
             // Iterate over the Items sent by the server
-            for( Iterator<Item> i = servItems.iterator(); i.hasNext(); ) {
+            for( Iterator< Item > i = servItems.iterator(); i.hasNext(); ) {
                 Item newItem = i.next();
 
                 int index = itemsStored.indexOf( newItem );
                 // If Item is not found in 'itemsStored'
-                if( index == -1 ){
+                if( index == - 1 ) {
                     // Add Item to the db and 'itemsStored'
                     ContentValues values = new ContentValues();
                     values.put( ItemTable.COLUMN_ITEM_ID, newItem.getId() );
@@ -217,7 +217,7 @@ public class ServerDataSource {
 
                     try {
                         providerClient.insert( ItemContentProvider.CONTENT_URI, values );
-                    } catch ( RemoteException e ) {
+                    } catch( RemoteException e ) {
                         e.printStackTrace();
                     }
 
@@ -228,8 +228,8 @@ public class ServerDataSource {
 
                     // Update 'existingItem' with values from 'newItem'
                     existingItem.setMarked( newItem.isMarked() );
-                    existingItem.setDeleted(newItem.isDeleted());
-                    existingItem.setTimeStamp(newItem.getTimeStamp());
+                    existingItem.setDeleted( newItem.isDeleted() );
+                    existingItem.setTimeStamp( newItem.getTimeStamp() );
                     existingItem.setVersion( newItem.getVersion() );
 
                     // Update db with our changes
@@ -245,7 +245,7 @@ public class ServerDataSource {
 
                     try {
                         providerClient.update( uri, values, null, null );
-                    } catch ( RemoteException e ) {
+                    } catch( RemoteException e ) {
                         e.printStackTrace();
                     }
                 }
@@ -268,26 +268,26 @@ public class ServerDataSource {
         return System.currentTimeMillis() / 1000;
     }
 
-    private List<Item> getAllItems() {
-    try {
-        Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, allColumns, null, null, null );
-
-        return ItemUtils.cursorToList( results );
-    } catch ( RemoteException e ) {
-        e.printStackTrace();
-    }
-
-    // By default, return an empty list
-    return null;
-    }
-
-    private List<Item> getPendingItems() {
+    private List< Item > getAllItems() {
         try {
-            Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, allColumns, ItemTable.COLUMN_ISPENDING
-                    + "=?", new String[] { "1" }, null );
+            Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, allColumns, null, null, null );
 
             return ItemUtils.cursorToList( results );
-        } catch ( RemoteException e ) {
+        } catch( RemoteException e ) {
+            e.printStackTrace();
+        }
+
+        // By default, return an empty list
+        return null;
+    }
+
+    private List< Item > getPendingItems() {
+        try {
+            Cursor results = providerClient.query( ItemContentProvider.CONTENT_URI, allColumns, ItemTable.COLUMN_ISPENDING
+                    + "=?", new String[]{ "1" }, null );
+
+            return ItemUtils.cursorToList( results );
+        } catch( RemoteException e ) {
             e.printStackTrace();
         }
 
