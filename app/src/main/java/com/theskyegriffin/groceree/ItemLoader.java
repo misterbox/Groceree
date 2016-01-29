@@ -12,7 +12,7 @@ import java.util.List;
 
 /**
  * Created by skybox on 6/4/15.
- * <p/>
+ *
  * Much of the inspiration here can be credited back to Alex Lockwood (great guy).
  * http://www.androiddesignpatterns.com/2012/08/implementing-loaders.html
  */
